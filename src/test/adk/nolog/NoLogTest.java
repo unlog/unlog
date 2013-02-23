@@ -1,7 +1,7 @@
 package adk.nolog;
 
 
-import adk.nolog.test.TestLogHandler;
+import adk.nolog.test.LogHandlerTestUtil;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
@@ -18,8 +18,8 @@ public class NoLogTest {
     public void shouldWriteLogInterfaceMethodNameToJavaUtilLoggingAppender() {
         final TestLogger log = NoLog.createLogger(TestLogger.class);
 
-        final TestLogHandler.LogReceiver logReceiver = mockery.mock(TestLogHandler.LogReceiver.class);
-        Logger logger = TestLogHandler.configureLogger("adk.nolog.NoLogTest.TestLogger", logReceiver);
+        final LogHandlerTestUtil.LogReceiver logReceiver = mockery.mock(LogHandlerTestUtil.LogReceiver.class);
+        Logger logger = LogHandlerTestUtil.configureLogger("adk.nolog.NoLogTest.TestLogger", logReceiver);
         logger.setLevel(Level.FINEST);
         mockery.checking(new Expectations(){{
             oneOf(logReceiver).log(Level.FINEST, "somethingHappened");

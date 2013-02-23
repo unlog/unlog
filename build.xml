@@ -2,7 +2,7 @@
 <project default="dist" name="nolog">
 
     <property name="project.dir" location="${ant.file}/.."/>
-    <property name="dev.root" value="${project.dir}"/>
+    <property name="dev.root" value="${project.dir}/.."/>
     <property name="build.root" value="${dev.root}/BUILD"/>
     <property name="dist.root" value="${dev.root}/DIST"/>
 
@@ -88,7 +88,7 @@
 
             <batchtest fork="true" todir="${test.reports.dir}">
                 <fileset dir="${test.src.dir}">
-                    <include name="**/*Test*.java"/>
+                    <include name="**/*Test.java"/>
                 </fileset>
             </batchtest>
         </junit>

@@ -5,10 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class TestLogHandler extends Handler {
+public class LogHandlerTestUtil extends Handler {
     private LogReceiver logReceiver;
 
-    public TestLogHandler(LogReceiver logReceiver) {
+    public LogHandlerTestUtil(LogReceiver logReceiver) {
         this.logReceiver = logReceiver;
     }
 
@@ -31,7 +31,7 @@ public class TestLogHandler extends Handler {
     public static Logger configureLogger(String loggerName, LogReceiver logReceiver) {
         Logger logger = Logger.getLogger(loggerName);
         logger.setUseParentHandlers(false);
-        logger.addHandler(new TestLogHandler(logReceiver));
+        logger.addHandler(new LogHandlerTestUtil(logReceiver));
         return logger;
     }
 
