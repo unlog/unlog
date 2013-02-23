@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<project default="dist" name="nolog">
+
+    <property name="project.dir" location="${ant.file}/.."/>
+    <property name="dev.root" value="${project.dir}"/>
+    <property name="build.root" value="${dev.root}/BUILD"/>
+    <property name="dist.root" value="${dev.root}/DIST"/>
+
+    <property name="lib.dir" value="${project.dir}/lib"/>
+    <property name="dist.dir" value="${dist.root}/${ant.project.name}"/>
+    <property name="build.dir" value="${build.root}/${ant.project.name}"/>
+
+    <macrodef name="compile.java">
+        <attribute name="src"/>
+        <attribute name="dest"/>
+        <attribute name="classpathid"/>
+        <attribute name="debug" default="true"/>
+        <attribute name="optimize" default="false"/>
+        <sequential>
+            <mkdir dir="@{dest}"/>
+
+            <pathconvert refid="@{classpathid}" property="@{classpathid}_txt"/>
+            <echo>CLASSPATH: ${@{classpathid}_txt}</echo>
+
+            <javac debug="@{debug}" optimize="@{optimize}" destdir="@{dest}" source="7" includeantruntime="false">
+                <src location="@{src}"/>
+                <classpath refid="@{classpathid}"/>
+            </javac>
+            <copy todir="@{dest}">
+                <fileset dir="@{src}" excludes="**/*.java"/>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <target name="production.classes">
+
+        <property name="production.src.dir" value="src/java"/>
+        <property name="production.classes.dir" value="${build.dir}/production/classes"/>
+
+        <!-- Normally, production libs would go here, but there aren't any.  It needs to be there for the tests though. -->
+        <path id="production.compilation.classpath"/>
+        <compile.java
+                src="${production.src.dir}"
+                dest="${production.classes.dir}"
+                classpathid="production.compilation.classpath"
+                />
+        <fileset id="production.classes.fileset" dir="${production.classes.dir}"/>
+        <path id="production.classpath" location="${production.classes.dir}"/>
+    </target>
+
+    <target name="test.classes" depends="production.classes">
+
+        <property name="test.src.dir" value="src/test"/>
+        <property name="test.classes.dir" value="${build.dir}/test/classes"/>
+        <path id="test.compilation.classpath">
+            <path refid="production.classpath"/>
+            <fileset dir="${lib.dir}">
+                <include name="junit/4.10/*.jar"/>
+                <exclude name="junit/4.10/*src.jar"/>
+                <include name="jmock/2.6.0/hamcrest-core-1.3.jar"/>
+                <include name="jmock/2.6.0/hamcrest-library-1.3.jar"/>
+                <include name="jmock/2.6.0/jmock-2.6.0.jar"/>
+                <include name="jmock/2.6.0/jmock-junit4-2.6.0.jar"/>
+            </fileset>
+        </path>
+        <compile.java
+                src="${test.src.dir}"
+                dest="${test.classes.dir}"
+                classpathid="test.compilation.classpath"
+                />
+        <path id="test.classpath">
+            <path refid="test.compilation.classpath"/>
+            <path location="${test.classes.dir}"/>
+        </path>
+    </target>
+
+    <target name="test" depends="test.classes">
+
+        <property name="test.reports.dir" location="${build.dir}/test/reports"/>
+        <mkdir dir="${test.reports.dir}"/>
+        <junit printsummary="yes" haltonfailure="true" haltonerror="true" fork="true"
+               forkmode="perBatch" dir="${basedir}" maxmemory="128m">
+            <classpath>
+                <path refid="test.classpath"/>
+            </classpath>
+
+            <formatter type="brief"/>
+
+            <batchtest fork="true" todir="${test.reports.dir}">
+                <fileset dir="${test.src.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="dist" depends="production.classes, test">
+        <property name="jarfile" value="${dist.dir}/${ant.project.name}.jar"/>
+        <jar destfile="${jarfile}">
+            <fileset refid="production.classes.fileset"/>
+        </jar>
+        <path id="dist.classpath">
+            <pathelement location="${jarfile}"/>
+        </path>
+    </target>
+
+    <target name="clean" depends="clean.build, clean.dist"/>
+
+    <target name="clean.build" if="build.dirty">
+        <delete includeemptydirs="true">
+            <fileset dir="${build.dir}"/>
+        </delete>
+    </target>
+
+    <target name="clean.dist" if="dist.dirty">
+        <delete includeemptydirs="true">
+            <fileset dir="${dist.dir}" erroronmissingdir="false"/>
+        </delete>
+    </target>
+
+</project>
