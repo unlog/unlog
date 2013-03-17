@@ -1,6 +1,5 @@
 package adk.nolog.test;
 
-import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,9 +16,7 @@ public class LogHandlerTestUtilTest {
     public void shouldWriteJavaUtilLogOutputToLogDestination() {
         final LoggerFixture loggerFixture = LoggerFixture.createLoggerFixture(mockery, "shouldWriteJavaUtilLogOutputToLogDestination");
 
-        mockery.checking(new Expectations() {{
-            oneOf(loggerFixture.getLogReceiver()).log(Level.SEVERE, "Some log message");
-        }});
+        loggerFixture.expectLogStatement(Level.SEVERE, "Some log message");
 
         Logger logger = Logger.getLogger("shouldWriteJavaUtilLogOutputToLogDestination");
         logger.severe("Some log message");

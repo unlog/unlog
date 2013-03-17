@@ -2,7 +2,6 @@ package adk.nolog;
 
 
 import adk.nolog.test.LoggerFixture;
-import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,24 +29,18 @@ public class NoLogTest {
     public void shouldWriteLogInterfaceMethodNameToJavaUtilLoggingAppender() {
 
         loggerFixture.setLevel(FINEST);
-        mockery.checking(new Expectations() {{
-            oneOf(loggerFixture.getLogReceiver()).log(FINEST, "somethingHappened");
-        }});
+        loggerFixture.expectLogStatement(FINEST, "somethingHappened");
 
         log.somethingHappened();
-
-
     }
 
     @Test
     public void shouldLogAtLevelSpecifiedInAnnotation() {
 
         loggerFixture.setLevel(SEVERE);
-
         loggerFixture.expectLogStatement(SEVERE, "logThisAtErrorLevel");
 
         log.logThisAtErrorLevel();
-
     }
 
     public interface TestLogger {

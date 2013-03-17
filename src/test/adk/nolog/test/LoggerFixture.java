@@ -6,47 +6,40 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LoggerFixture implements TestRule{
-    private final Logger value;
+public class LoggerFixture implements TestRule {
+    private final Logger logger;
+    private final LogHandler handler;
     private LogReceiver logReceiver;
     private JUnitRuleMockery mockery;
 
-    public LoggerFixture(Logger value, LogReceiver logReceiver, JUnitRuleMockery mockery) {
-        this.value = value;
-        this.logReceiver = logReceiver;
+    public LoggerFixture(Logger logger, JUnitRuleMockery mockery) {
+        this.logger = logger;
         this.mockery = mockery;
-    }
+        this.logReceiver = mockery.mock(LogReceiver.class);
+        handler = new LogHandler(this.logReceiver);
 
-    public static LoggerFixture createLoggerFixture(JUnitRuleMockery mockery1, String loggerName) {
-        final LogReceiver logReceiver = mockery1.mock(LogReceiver.class);
-        Logger logger = Logger.getLogger(loggerName);
         logger.setUseParentHandlers(false);
-        logger.addHandler(new LogHandler(logReceiver));
-        return new LoggerFixture(logger, logReceiver, mockery1);
+        logger.addHandler(handler);
     }
 
-
-    public Logger getValue() {
-        return value;
+    public static LoggerFixture createLoggerFixture(JUnitRuleMockery mockery, String loggerName) {
+        return new LoggerFixture(Logger.getLogger(loggerName), mockery);
     }
+
 
     public void setLevel(Level level) {
-        Logger jLogger = getValue();
-        jLogger.setLevel(level);
+        logger.setLevel(level);
     }
 
     public LogReceiver getLogReceiver() {
         return logReceiver;
     }
 
-    public void clearHandlersFromLogger() {
-        for (Handler handler : getValue().getHandlers()) {
-            getValue().removeHandler(handler);
-        }
+    private void removeHandlerFromLogger() {
+        logger.removeHandler(handler);
     }
 
     public void expectLogStatement(Level level, String message) {
@@ -61,7 +54,7 @@ public class LoggerFixture implements TestRule{
             @Override
             public void evaluate() throws Throwable {
                 base.evaluate();
-                clearHandlersFromLogger();
+                removeHandlerFromLogger();
             }
         };
     }
