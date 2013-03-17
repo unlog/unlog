@@ -5,7 +5,6 @@ import adk.nolog.spi.LevelMap;
 import java.util.logging.Level;
 
 public class JavaUtilLoggingLevelMap implements LevelMap<Level> {
-    public static final Level DEFAULT_LOG_LEVEL = Level.FINEST;
 
     @Override
     public java.util.logging.Level mapError() {
@@ -15,5 +14,15 @@ public class JavaUtilLoggingLevelMap implements LevelMap<Level> {
     @Override
     public Level mapDebug() {
         return Level.FINEST;
+    }
+
+    @Override
+    public Level mapInfo() {
+        return Level.INFO;
+    }
+
+    @Override
+    public Level mapWarning() {
+        return Level.WARNING;
     }
 }
