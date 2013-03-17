@@ -1,5 +1,7 @@
 package adk.nolog;
 
+import adk.nolog.jul.JavaUtilLoggingLevelMap;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -8,7 +10,7 @@ import java.util.logging.Logger;
 
 public class NoLog {
 
-    private static final Level DEFAULT_LOG_LEVEL = Level.FINEST;
+    static final Level DEFAULT_LOG_LEVEL = Level.FINEST;
 
     public static <L> L createLogger(Class<L> loggerInterface) {
 
@@ -33,12 +35,8 @@ public class NoLog {
     }
 
     private static Level determineLogLevelFromAnnotation(Log logAnnotation) {
-        switch (logAnnotation.level()) {
-            case ERROR:
-                return Level.SEVERE;
-            case DEBUG: // fall through
-            default:
-                return DEFAULT_LOG_LEVEL;
-        }
+        adk.nolog.Level level = logAnnotation.level();
+        return level.mapLevel(new JavaUtilLoggingLevelMap());
     }
+
 }
