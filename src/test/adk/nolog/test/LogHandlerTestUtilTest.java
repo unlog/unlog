@@ -15,11 +15,10 @@ public class LogHandlerTestUtilTest {
 
     @Test
     public void shouldWriteJavaUtilLogOutputToLogDestination() {
-        final LogHandlerTestUtil.LogReceiver logReceiver = mockery.mock(LogHandlerTestUtil.LogReceiver.class);
-        LogHandlerTestUtil.configureLogger("shouldWriteJavaUtilLogOutputToLogDestination", logReceiver);
+        final LoggerFixture loggerFixture = LoggerFixture.createLoggerFixture(mockery, "shouldWriteJavaUtilLogOutputToLogDestination");
 
         mockery.checking(new Expectations() {{
-            oneOf(logReceiver).log(Level.SEVERE, "Some log message");
+            oneOf(loggerFixture.getLogReceiver()).log(Level.SEVERE, "Some log message");
         }});
 
         Logger logger = Logger.getLogger("shouldWriteJavaUtilLogOutputToLogDestination");

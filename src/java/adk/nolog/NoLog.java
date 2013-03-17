@@ -3,9 +3,13 @@ package adk.nolog;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NoLog {
+
+    private static final Level DEFAULT_LOG_LEVEL = Level.FINEST;
+
     public static <L> L createLogger(Class<L> loggerInterface) {
 
         //noinspection unchecked
@@ -13,9 +17,22 @@ public class NoLog {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 Logger logger = Logger.getLogger(method.getDeclaringClass().getCanonicalName());
-                logger.finest(method.getName());
+                logger.log(determineLogLevel(method), method.getName());
                 return null;
             }
         });
+    }
+
+    private static Level determineLogLevel(Method method) {
+        if (method.isAnnotationPresent(Log.class)){
+        Log logAnnotation = method.getAnnotation(Log.class);
+        switch (logAnnotation.level()){
+            case ERROR: return Level.SEVERE;
+            case DEBUG: // fall through
+            default: return DEFAULT_LOG_LEVEL;
+        }
+        } else {
+            return DEFAULT_LOG_LEVEL;
+        }
     }
 }
