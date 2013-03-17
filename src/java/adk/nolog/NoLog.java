@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 public class NoLog {
 
-    static final Level DEFAULT_LOG_LEVEL = Level.FINEST;
-
     public static <L> L createLogger(Class<L> loggerInterface) {
 
         //noinspection unchecked
@@ -26,17 +24,21 @@ public class NoLog {
     }
 
     private static Level determineLogLevel(Method method) {
+        adk.nolog.Level level;
         if (method.isAnnotationPresent(Log.class)) {
-            Log logAnnotation = method.getAnnotation(Log.class);
-            return determineLogLevelFromAnnotation(logAnnotation);
+            level = determineLogLevelFromAnnotation(method.getAnnotation(Log.class));
         } else {
-            return DEFAULT_LOG_LEVEL;
+            level = useDefaultLoglevel();
         }
+        return level.mapLevel(new JavaUtilLoggingLevelMap());
     }
 
-    private static Level determineLogLevelFromAnnotation(Log logAnnotation) {
-        adk.nolog.Level level = logAnnotation.level();
-        return level.mapLevel(new JavaUtilLoggingLevelMap());
+    private static adk.nolog.Level useDefaultLoglevel() {
+        return adk.nolog.Level.DEBUG;
+    }
+
+    private static adk.nolog.Level determineLogLevelFromAnnotation(Log logAnnotation) {
+        return logAnnotation.level();
     }
 
 }

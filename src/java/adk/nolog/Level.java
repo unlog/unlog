@@ -1,20 +1,20 @@
 package adk.nolog;
 
-import adk.nolog.jul.JavaUtilLoggingLevelMap;
+import adk.nolog.spi.LevelMap;
 
 public enum Level {
     DEBUG {
         @Override
-        java.util.logging.Level mapLevel(JavaUtilLoggingLevelMap levelMap) {
+        <L> L mapLevel(LevelMap<L> levelMap) {
             return levelMap.mapDebug();
         }
     },
     ERROR {
         @Override
-        java.util.logging.Level mapLevel(JavaUtilLoggingLevelMap levelMap) {
+        <L> L mapLevel(LevelMap<L> levelMap) {
             return levelMap.mapError();
         }
     };
 
-    abstract java.util.logging.Level mapLevel(JavaUtilLoggingLevelMap levelMap);
+    abstract <L> L mapLevel(LevelMap<L> levelMap);
 }
