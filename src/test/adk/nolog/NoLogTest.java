@@ -15,10 +15,11 @@ public class NoLogTest {
 
     @Rule
     public JUnitRuleMockery mockery = new JUnitRuleMockery();
-    private TestLogger log;
 
     @Rule
     public LoggerFixture loggerFixture = LoggerFixture.createLoggerFixture(mockery, TestLogger.class.getCanonicalName());
+
+    private TestLogger log;
 
     @Before
     public void setUp() throws Exception {
@@ -35,19 +36,20 @@ public class NoLogTest {
     }
 
     @Test
-    public void shouldLogAtLevelSpecifiedInAnnotation() {
+    public void shouldOnlyLogAtLevelSpecifiedInAnnotation() {
 
         loggerFixture.setLevel(SEVERE);
-        loggerFixture.expectLogStatement(SEVERE, "logThisAtErrorLevel");
+        loggerFixture.expectLogStatement(SEVERE, "someSortOfErrorOccurred");
 
-        log.logThisAtErrorLevel();
+        log.someSortOfErrorOccurred();
+        log.somethingHappened();
     }
 
     public interface TestLogger {
         void somethingHappened();
 
         @Log(level = ERROR)
-        void logThisAtErrorLevel();
+        void someSortOfErrorOccurred();
     }
 
 }

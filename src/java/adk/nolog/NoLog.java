@@ -24,15 +24,21 @@ public class NoLog {
     }
 
     private static Level determineLogLevel(Method method) {
-        if (method.isAnnotationPresent(Log.class)){
-        Log logAnnotation = method.getAnnotation(Log.class);
-        switch (logAnnotation.level()){
-            case ERROR: return Level.SEVERE;
-            case DEBUG: // fall through
-            default: return DEFAULT_LOG_LEVEL;
-        }
+        if (method.isAnnotationPresent(Log.class)) {
+            Log logAnnotation = method.getAnnotation(Log.class);
+            return determineLogLevelFromAnnotation(logAnnotation);
         } else {
             return DEFAULT_LOG_LEVEL;
+        }
+    }
+
+    private static Level determineLogLevelFromAnnotation(Log logAnnotation) {
+        switch (logAnnotation.level()) {
+            case ERROR:
+                return Level.SEVERE;
+            case DEBUG: // fall through
+            default:
+                return DEFAULT_LOG_LEVEL;
         }
     }
 }
