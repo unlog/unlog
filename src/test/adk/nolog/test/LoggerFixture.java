@@ -2,15 +2,15 @@ package adk.nolog.test;
 
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LoggerFixture implements MethodRule{
+public class LoggerFixture implements TestRule{
     private final Logger value;
     private LogReceiver logReceiver;
     private JUnitRuleMockery mockery;
@@ -49,8 +49,14 @@ public class LoggerFixture implements MethodRule{
         }
     }
 
+    public void expectLogStatement(Level level, String message) {
+        Expectations expectations = new Expectations();
+        expectations.oneOf(logReceiver).log(level, message);
+        mockery.checking(expectations);
+    }
+
     @Override
-    public Statement apply(final Statement base, FrameworkMethod method, Object target) {
+    public Statement apply(final Statement base, Description description) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -58,12 +64,6 @@ public class LoggerFixture implements MethodRule{
                 clearHandlersFromLogger();
             }
         };
-    }
-
-    public void expectLogStatement(Level level, String message) {
-        Expectations expectations = new Expectations();
-        expectations.oneOf(logReceiver).log(level, message);
-        mockery.checking(expectations);
     }
 
     public interface LogReceiver {
