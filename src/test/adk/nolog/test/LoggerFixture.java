@@ -34,17 +34,17 @@ public class LoggerFixture implements TestRule {
         logger.setLevel(level);
     }
 
-    public LogReceiver getLogReceiver() {
-        return logReceiver;
-    }
-
     private void removeHandlerFromLogger() {
         logger.removeHandler(handler);
     }
 
     public void expectLogStatement(Level level, String message) {
+        expectLogStatement(level, message, null);
+    }
+
+    public void expectLogStatement(Level level, String message, Object[] args) {
         Expectations expectations = new Expectations();
-        expectations.oneOf(logReceiver).log(level, message);
+        expectations.oneOf(logReceiver).log(level, message, args);
         mockery.checking(expectations);
     }
 
@@ -60,6 +60,6 @@ public class LoggerFixture implements TestRule {
     }
 
     public interface LogReceiver {
-        public void log(Level level, String message);
+        public void log(Level level, String message, Object... parameters);
     }
 }

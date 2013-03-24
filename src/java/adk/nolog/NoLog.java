@@ -16,11 +16,15 @@ public class NoLog {
         return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                Logger logger = Logger.getLogger(method.getDeclaringClass().getCanonicalName());
-                logger.log(determineLogLevel(method), method.getName());
+                writeLogEvent(method, args, method.getDeclaringClass().getCanonicalName(), method.getName());
                 return null;
             }
         });
+    }
+
+    private static void writeLogEvent(Method method, Object[] args, String logCategory, String message) {
+        Logger logger = Logger.getLogger(logCategory);
+        logger.log(determineLogLevel(method), message, args);
     }
 
     private static Level determineLogLevel(Method method) {
@@ -28,12 +32,12 @@ public class NoLog {
         if (method.isAnnotationPresent(Log.class)) {
             level = determineLogLevelFromAnnotation(method.getAnnotation(Log.class));
         } else {
-            level = useDefaultLoglevel();
+            level = useDefaultLogLevel();
         }
         return level.mapLevel(new JavaUtilLoggingLevelMap());
     }
 
-    private static adk.nolog.Level useDefaultLoglevel() {
+    private static adk.nolog.Level useDefaultLogLevel() {
         return adk.nolog.Level.DEBUG;
     }
 

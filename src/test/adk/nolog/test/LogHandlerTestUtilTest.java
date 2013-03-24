@@ -16,7 +16,7 @@ public class LogHandlerTestUtilTest {
     public void shouldWriteJavaUtilLogOutputToLogDestination() {
         final LoggerFixture loggerFixture = LoggerFixture.createLoggerFixture(mockery, "shouldWriteJavaUtilLogOutputToLogDestination");
 
-        loggerFixture.expectLogStatement(Level.SEVERE, "Some log message");
+        loggerFixture.expectLogStatement(Level.SEVERE, "Some log message", null);
 
         Logger logger = Logger.getLogger("shouldWriteJavaUtilLogOutputToLogDestination");
         logger.severe("Some log message");

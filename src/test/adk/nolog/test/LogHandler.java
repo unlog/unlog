@@ -12,8 +12,7 @@ public class LogHandler extends Handler {
 
     @Override
     public void publish(LogRecord record) {
-
-        logReceiver.log(record.getLevel(), record.getMessage());
+        logReceiver.log(record.getLevel(), record.getMessage(), record.getParameters());
     }
 
     @Override

@@ -45,11 +45,21 @@ public class NoLogTest {
         log.somethingHappened();
     }
 
+    @Test
+    public void shouldLogArguments() {
+        loggerFixture.setLevel(FINEST);
+        loggerFixture.expectLogStatement(FINEST, "somethingHappenedAndHeresThe", new Object[]{"detail"});
+
+        log.somethingHappenedAndHeresThe("detail");
+    }
+
     public interface TestLogger {
         void somethingHappened();
 
         @Log(level = ERROR)
         void someSortOfErrorOccurred();
+
+        void somethingHappenedAndHeresThe(String detail);
     }
 
 }
