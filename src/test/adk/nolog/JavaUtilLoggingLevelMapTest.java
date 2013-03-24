@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.logging.Level;
 
-import static adk.nolog.Level.*;
+import static adk.nolog.LogLevel.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

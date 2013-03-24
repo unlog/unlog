@@ -1,14 +1,15 @@
 package adk.nolog;
 
-import adk.nolog.jul.JavaUtilLoggingLevelMap;
+import adk.nolog.jul.JavaUtilLogWriter;
+import adk.nolog.spi.LogWriter;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class NoLog {
+
+    private static final LogWriter LOG_WRITER = new JavaUtilLogWriter();
 
     public static <L> L createLogger(Class<L> loggerInterface) {
 
@@ -16,33 +17,24 @@ public class NoLog {
         return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                writeLogEvent(method, args, method.getDeclaringClass().getCanonicalName(), method.getName());
+                LOG_WRITER.writeLogEvent(method.getDeclaringClass().getCanonicalName(), determineLogLevel(method), method.getName(), args);
                 return null;
             }
         });
     }
 
-    private static void writeLogEvent(Method method, Object[] args, String logCategory, String message) {
-        Logger logger = Logger.getLogger(logCategory);
-        logger.log(determineLogLevel(method), message, args);
-    }
-
-    private static Level determineLogLevel(Method method) {
-        adk.nolog.Level level;
+    private static LogLevel determineLogLevel(Method method) {
+        LogLevel logLevel;
         if (method.isAnnotationPresent(Log.class)) {
-            level = determineLogLevelFromAnnotation(method.getAnnotation(Log.class));
+            logLevel = method.getAnnotation(Log.class).level();
         } else {
-            level = useDefaultLogLevel();
+            logLevel = useDefaultLogLevel();
         }
-        return level.mapLevel(new JavaUtilLoggingLevelMap());
+        return logLevel;
     }
 
-    private static adk.nolog.Level useDefaultLogLevel() {
-        return adk.nolog.Level.DEBUG;
-    }
-
-    private static adk.nolog.Level determineLogLevelFromAnnotation(Log logAnnotation) {
-        return logAnnotation.level();
+    private static LogLevel useDefaultLogLevel() {
+        return LogLevel.DEBUG;
     }
 
 }

@@ -2,29 +2,29 @@ package adk.nolog;
 
 import adk.nolog.spi.LevelMap;
 
-public enum Level {
+public enum LogLevel {
     DEBUG {
         @Override
-        <L> L mapLevel(LevelMap<L> levelMap) {
+        public <L> L mapLevel(LevelMap<L> levelMap) {
             return levelMap.mapDebug();
         }
     },
     ERROR {
         @Override
-        <L> L mapLevel(LevelMap<L> levelMap) {
+        public <L> L mapLevel(LevelMap<L> levelMap) {
             return levelMap.mapError();
         }
     }, INFO {
         @Override
-        <L> L mapLevel(LevelMap<L> levelMap) {
+        public <L> L mapLevel(LevelMap<L> levelMap) {
             return levelMap.mapInfo();
         }
     }, WARNING {
         @Override
-        <L> L mapLevel(LevelMap<L> levelMap) {
+        public <L> L mapLevel(LevelMap<L> levelMap) {
             return levelMap.mapWarning();
         }
     };
 
-    abstract <L> L mapLevel(LevelMap<L> levelMap);
+    public abstract <L> L mapLevel(LevelMap<L> levelMap);
 }

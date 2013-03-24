@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static adk.nolog.Level.ERROR;
+import static adk.nolog.LogLevel.ERROR;
 import static java.util.logging.Level.FINEST;
 import static java.util.logging.Level.SEVERE;
 

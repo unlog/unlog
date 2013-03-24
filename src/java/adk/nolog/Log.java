@@ -5,5 +5,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Log {
-    Level level() default Level.DEBUG;
+    LogLevel level() default LogLevel.DEBUG;
 }
