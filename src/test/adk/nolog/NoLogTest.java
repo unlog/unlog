@@ -53,6 +53,15 @@ public class NoLogTest {
         log.somethingHappenedAndHeresThe("detail");
     }
 
+    @Test
+    public void shouldLogExceptionsUsingTheUnderlyingFrameworkFacility() {
+        loggerFixture.setLevel(FINEST);
+        Exception e = new Exception();
+        loggerFixture.expectLogStatement(FINEST, "ohNoTheresBeenAnException", e);
+
+        log.ohNoTheresBeenAnException(e);
+    }
+
     public interface TestLogger {
         void somethingHappened();
 
@@ -60,6 +69,8 @@ public class NoLogTest {
         void someSortOfErrorOccurred();
 
         void somethingHappenedAndHeresThe(String detail);
+
+        void ohNoTheresBeenAnException(Exception e);
     }
 
 }

@@ -12,11 +12,13 @@ import java.util.logging.Logger;
 public class LoggerFixture implements TestRule {
     private final Logger logger;
     private final LogHandler handler;
+    private final Level initialLogLevel;
     private LogReceiver logReceiver;
     private JUnitRuleMockery mockery;
 
     public LoggerFixture(Logger logger, JUnitRuleMockery mockery) {
         this.logger = logger;
+        initialLogLevel = logger.getLevel();
         this.mockery = mockery;
         this.logReceiver = mockery.mock(LogReceiver.class);
         handler = new LogHandler(this.logReceiver);
@@ -39,12 +41,20 @@ public class LoggerFixture implements TestRule {
     }
 
     public void expectLogStatement(Level level, String message) {
-        expectLogStatement(level, message, null);
+        expectLogStatement(level, message, (Object[]) null);
     }
 
     public void expectLogStatement(Level level, String message, Object[] args) {
+        expectLog(level, message, null, args);
+    }
+
+    public void expectLogStatement(Level level, String message, Exception t) {
+        expectLog(level, message, t, null);
+    }
+
+    private void expectLog(Level level, String message, Throwable t, Object[] parameters) {
         Expectations expectations = new Expectations();
-        expectations.oneOf(logReceiver).log(level, message, args);
+        expectations.oneOf(logReceiver).log(level, message, t, parameters);
         mockery.checking(expectations);
     }
 
@@ -53,13 +63,21 @@ public class LoggerFixture implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                base.evaluate();
-                removeHandlerFromLogger();
+                try {
+                    base.evaluate();
+                } finally {
+                    removeHandlerFromLogger();
+                    resetLogLevel();
+                }
             }
         };
     }
 
+    private void resetLogLevel() {
+        logger.setLevel(initialLogLevel);
+    }
+
     public interface LogReceiver {
-        public void log(Level level, String message, Object... parameters);
+        public void log(Level level, String message, Throwable t, Object[] parameters);
     }
 }
