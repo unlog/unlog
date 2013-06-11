@@ -14,10 +14,22 @@ public class JavaUtilLogWriter implements LogWriter {
     public void writeLogEvent(String logCategoryName, LogLevel logLevel, String message, Object[] args) {
         Logger logger = Logger.getLogger(logCategoryName);
         Level level = logLevel.mapLevel(levelMap);
-        if (args != null && args[0] instanceof Throwable) {
-            logger.log(level, message, (Throwable) args[0]);
+        if (hasThrowableArg(args)) {
+            logger.log(level, message, throwableArg(args));
         } else {
             logger.log(level, message, args);
         }
+    }
+
+    private Throwable throwableArg(Object[] args) {
+        return (Throwable) args[0];
+    }
+
+    private boolean hasThrowableArg(Object[] args) {
+        return hasArgs(args) && args[0] instanceof Throwable;
+    }
+
+    private boolean hasArgs(Object[] args) {
+        return args != null;
     }
 }
