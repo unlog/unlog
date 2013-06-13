@@ -62,6 +62,15 @@ public class NoLogTest {
         log.ohNoTheresBeenAnException(e);
     }
 
+    @Test
+    public void shouldLogExceptionsAlongWithOtherArguments() {
+        loggerFixture.setLevel(FINEST);
+        Exception e = new Exception();
+        loggerFixture.expectLogStatement(FINEST, "ohNoTheresBeenAnException", new Object[]{"while processing some transaction"}, e);
+
+        log.ohNoTheresBeenAnException("while processing some transaction", e);
+    }
+
     public interface TestLogger {
         void somethingHappened();
 
@@ -71,6 +80,8 @@ public class NoLogTest {
         void somethingHappenedAndHeresThe(String detail);
 
         void ohNoTheresBeenAnException(Exception e);
+
+        void ohNoTheresBeenAnException(String details, Exception e);
     }
 
 }
