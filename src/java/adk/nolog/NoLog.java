@@ -17,10 +17,18 @@ public class NoLog {
         return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                LOG_WRITER.writeLogEvent(method.getDeclaringClass().getCanonicalName(), determineLogLevel(method), method.getName(), args);
+                LOG_WRITER.writeLogEvent(categoryName(method), determineLogLevel(method), message(method), args);
                 return null;
             }
         });
+    }
+
+    private static String message(Method method) {
+        return method.getName();
+    }
+
+    private static String categoryName(Method method) {
+        return method.getDeclaringClass().getCanonicalName();
     }
 
     private static LogLevel determineLogLevel(Method method) {
