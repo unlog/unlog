@@ -36,7 +36,7 @@ public class LogEvent {
     }
 
     public boolean hasArgs() {
-        return getArgs() != null;
+        return getArgs().length > 0;
     }
 
     public Throwable throwableArg() {
@@ -55,9 +55,6 @@ public class LogEvent {
 
     public Object[] removeThrowableArg() {
         if (!hasArgs()) return null;
-
-        Object[] args = getArgs();
-        if (args.length == 1) return null;
 
         List<Object> argsList = new LinkedList<Object>(Arrays.asList(args));
         argsList.remove(throwableArg());

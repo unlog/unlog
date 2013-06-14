@@ -41,7 +41,7 @@ public class LoggerFixture implements TestRule {
     }
 
     public void expectLogStatement(Level level, String message) {
-        expectLogStatement(level, message, (Object[]) null);
+        expectLogStatement(level, message, noArgs());
     }
 
     public void expectLogStatement(Level level, String message, Object[] args) {
@@ -49,7 +49,7 @@ public class LoggerFixture implements TestRule {
     }
 
     public void expectLogStatement(Level level, String message, Exception t) {
-        expectLogStatement(level, message, t, null);
+        expectLogStatement(level, message, t, noArgs());
     }
 
     public void expectLogStatement(Level level, String message, Object[] detail, Exception e) {
@@ -60,6 +60,10 @@ public class LoggerFixture implements TestRule {
         Expectations expectations = new Expectations();
         expectations.oneOf(logReceiver).log(level, message, t, detail);
         mockery.checking(expectations);
+    }
+
+    private Object[] noArgs() {
+        return new Object[0];
     }
 
     @Override

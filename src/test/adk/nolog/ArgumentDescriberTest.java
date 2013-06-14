@@ -1,7 +1,6 @@
 package adk.nolog;
 
 import adk.nolog.spi.ArgumentDescriber;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -14,18 +13,36 @@ import static org.junit.Assert.assertThat;
 public class ArgumentDescriberTest {
 
     @Test
-    @Ignore
     public void shouldHandleNoArgs() {
-        ArgumentDescriber argumentDescriber = new ArgumentDescriber(method(), new Object[0]);
+
+        ArgumentDescriber argumentDescriber = givenAnArgumentDescriber().withNoArgs().build();
         assertThat(argumentDescriber.args(), is(not(nullValue())));
         assertThat(argumentDescriber.args().length, is(0));
     }
 
-    private Method method() {
-        throw new UnsupportedOperationException();
+    private ArgumentDescriberFixture givenAnArgumentDescriber() {
+        return new ArgumentDescriberFixture();
+    }
+
+    @Test
+    public void shouldHandleOneArg() {
+
+    }
+
+
+    private class ArgumentDescriberFixture {
+
+        private Object[] args;
+        private Method method;
+
+        private ArgumentDescriber build() {
+            return new ArgumentDescriber(method, args);
+        }
+
+        private ArgumentDescriberFixture withNoArgs() {
+            args = null;
+            return this;
+        }
     }
 }
 
-interface TheMethods {
-    void noArgs();
-}

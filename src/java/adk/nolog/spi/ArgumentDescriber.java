@@ -8,7 +8,7 @@ public class ArgumentDescriber {
 
     public ArgumentDescriber(Method method, Object[] args) {
         this.method = method;
-        this.args = args;
+        this.args = args == null ? new Object[0] : args;
     }
 
     public Object[] args() {
