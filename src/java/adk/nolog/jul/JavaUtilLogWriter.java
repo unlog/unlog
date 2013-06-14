@@ -1,6 +1,6 @@
 package adk.nolog.jul;
 
-import adk.nolog.LogLevel;
+import adk.nolog.spi.LogEvent;
 import adk.nolog.spi.LogWriter;
 
 import java.util.Arrays;
@@ -15,48 +15,44 @@ public class JavaUtilLogWriter implements LogWriter {
     private final JavaUtilLoggingLevelMap levelMap = new JavaUtilLoggingLevelMap();
 
     @Override
-    public void writeLogEvent(String logCategoryName, LogLevel logLevel, String message, Object[] args) {
-        Logger logger = Logger.getLogger(logCategoryName);
-        Level julLevel = logLevel.mapLevel(levelMap);
-        LogRecord logRecord = new LogRecord(julLevel, message);
-        Object[] detail = args;
-        if (hasThrowableArg(args)) {
-            logRecord.setThrown(throwableArg(args));
-            detail = removeThrowableArg(args);
+    public void writeLogEvent(LogEvent logEvent) {
+        Logger logger = Logger.getLogger(logEvent.getLogCategoryName());
+        Level julLevel = logEvent.getLogLevel().mapLevel(levelMap);
+        LogRecord logRecord = new LogRecord(julLevel, logEvent.getMessage());
+        Object[] detail = logEvent.getArgs();
+        if (hasThrowableArg(logEvent)) {
+            logRecord.setThrown(throwableArg(logEvent));
+            detail = removeThrowableArg(logEvent);
         }
         logRecord.setParameters(detail);
         logger.log(logRecord);
     }
 
-    private Object[] removeThrowableArg(Object[] args) {
-        if (args == null) return null;
+    private Object[] removeThrowableArg(LogEvent event) {
+        if (!hasArgs(event)) return null;
+
+        Object[] args = event.getArgs();
         if (args.length == 1) return null;
 
         List<Object> argsList = new LinkedList<Object>(Arrays.asList(args));
-
-        argsList.remove(throwableArg(args));
+        argsList.remove(throwableArg(event));
         return argsList.toArray(new Object[argsList.size()]);
     }
 
-    private Throwable throwableArg(Object[] args) {
-        if (hasArgs(args)) {
-            for (Object arg : args) {
+    private Throwable throwableArg(LogEvent event) {
+        if (hasArgs(event)) {
+            for (Object arg : event.getArgs()) {
                 if (arg instanceof Throwable) return (Throwable) arg;
             }
         }
         return null;
     }
 
-    private boolean hasThrowableArg(Object[] args) {
-        if (hasArgs(args)) {
-            for (Object arg : args) {
-                if (arg instanceof Throwable) return true;
-            }
-        }
-        return false;
+    private boolean hasThrowableArg(LogEvent event) {
+        return throwableArg(event) != null;
     }
 
-    private boolean hasArgs(Object[] args) {
-        return args != null;
+    private boolean hasArgs(LogEvent event) {
+        return event.getArgs() != null;
     }
 }

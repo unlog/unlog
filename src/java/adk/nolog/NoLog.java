@@ -1,6 +1,7 @@
 package adk.nolog;
 
 import adk.nolog.jul.JavaUtilLogWriter;
+import adk.nolog.spi.LogEvent;
 import adk.nolog.spi.LogWriter;
 
 import java.lang.reflect.InvocationHandler;
@@ -17,7 +18,7 @@ public class NoLog {
         return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                LOG_WRITER.writeLogEvent(categoryName(method), determineLogLevel(method), message(method), args);
+                LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), message(method), args));
                 return null;
             }
         });
