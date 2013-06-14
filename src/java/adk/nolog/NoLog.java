@@ -19,7 +19,7 @@ public class NoLog {
         return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), message(method), new ArgumentDescriber(method, args)));
+                LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), message(method), new ArgumentDescriber(args)));
                 return null;
             }
         });

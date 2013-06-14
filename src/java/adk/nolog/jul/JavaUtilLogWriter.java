@@ -20,10 +20,10 @@ public class JavaUtilLogWriter implements LogWriter, EventLogger {
         Object[] detail = logEvent.getArgs();
 
 
-        if (logEvent.hasThrowableArg()) {
-            logRecord.setThrown(logEvent.throwableArg());
-            detail = logEvent.removeThrowableArg();
-        }
+//        if (logEvent.hasThrowableArg()) {
+        logRecord.setThrown(logEvent.throwableArg());
+        detail = logEvent.getArgs();
+//        }
 
         logRecord.setParameters(detail);
         logger.log(logRecord);
