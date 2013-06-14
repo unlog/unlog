@@ -2,6 +2,10 @@ package adk.nolog.spi;
 
 import adk.nolog.LogLevel;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 public class LogEvent {
     private final String logCategoryName;
     private final LogLevel logLevel;
@@ -29,5 +33,34 @@ public class LogEvent {
 
     public Object[] getArgs() {
         return args;
+    }
+
+    public boolean hasArgs() {
+        return getArgs() != null;
+    }
+
+    public Throwable throwableArg() {
+        if (hasArgs()) {
+            for (Object arg : getArgs()) {
+                if (arg instanceof Throwable) return (Throwable) arg;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasThrowableArg() {
+        //noinspection ThrowableResultOfMethodCallIgnored
+        return throwableArg() != null;
+    }
+
+    public Object[] removeThrowableArg() {
+        if (!hasArgs()) return null;
+
+        Object[] args = getArgs();
+        if (args.length == 1) return null;
+
+        List<Object> argsList = new LinkedList<Object>(Arrays.asList(args));
+        argsList.remove(throwableArg());
+        return argsList.toArray(new Object[argsList.size()]);
     }
 }
