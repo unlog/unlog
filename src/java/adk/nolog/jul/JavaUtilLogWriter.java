@@ -1,5 +1,6 @@
 package adk.nolog.jul;
 
+import adk.nolog.spi.EventLogger;
 import adk.nolog.spi.LogEvent;
 import adk.nolog.spi.LogWriter;
 
@@ -7,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class JavaUtilLogWriter implements LogWriter {
+public class JavaUtilLogWriter implements LogWriter, EventLogger {
 
     private final JavaUtilLoggingLevelMap levelMap = new JavaUtilLoggingLevelMap();
 
@@ -17,10 +18,13 @@ public class JavaUtilLogWriter implements LogWriter {
         Level julLevel = logEvent.getLogLevel().mapLevel(levelMap);
         LogRecord logRecord = new LogRecord(julLevel, logEvent.getMessage());
         Object[] detail = logEvent.getArgs();
+
+
         if (logEvent.hasThrowableArg()) {
             logRecord.setThrown(logEvent.throwableArg());
             detail = logEvent.removeThrowableArg();
         }
+
         logRecord.setParameters(detail);
         logger.log(logRecord);
     }

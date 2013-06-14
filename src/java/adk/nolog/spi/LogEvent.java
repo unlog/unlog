@@ -12,11 +12,11 @@ public class LogEvent {
     private final String message;
     private final Object[] args;
 
-    public LogEvent(String logCategoryName, LogLevel logLevel, String message, Object[] args) {
+    public LogEvent(String logCategoryName, LogLevel logLevel, String message, ArgumentDescriber argumentDescriber) {
         this.logCategoryName = logCategoryName;
         this.logLevel = logLevel;
         this.message = message;
-        this.args = args;
+        this.args = argumentDescriber.args();
     }
 
     public String getLogCategoryName() {
