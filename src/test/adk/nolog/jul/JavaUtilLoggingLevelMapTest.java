@@ -1,13 +1,12 @@
-package adk.nolog;
+package adk.nolog.jul;
 
-import adk.nolog.jul.JavaUtilLoggingLevelMap;
 import org.junit.Test;
 
 import java.util.logging.Level;
 
 import static adk.nolog.LogLevel.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class JavaUtilLoggingLevelMapTest {
 

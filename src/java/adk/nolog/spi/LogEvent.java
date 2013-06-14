@@ -6,13 +6,13 @@ public class LogEvent {
     private final String logCategoryName;
     private final LogLevel logLevel;
     private final String message;
-    private final ArgumentDescriber argumentDescriber;
+    private final Arguments arguments;
 
-    public LogEvent(String logCategoryName, LogLevel logLevel, String message, ArgumentDescriber argumentDescriber) {
+    public LogEvent(String logCategoryName, LogLevel logLevel, String message, Arguments arguments) {
         this.logCategoryName = logCategoryName;
         this.logLevel = logLevel;
         this.message = message;
-        this.argumentDescriber = argumentDescriber;
+        this.arguments = arguments;
     }
 
     public String getLogCategoryName() {
@@ -28,11 +28,11 @@ public class LogEvent {
     }
 
     public Object[] getArgs() {
-        return argumentDescriber.args().toArray();
+        return arguments.args().toArray();
     }
 
     public Throwable throwableArg() {
-        return argumentDescriber.throwable();
+        return arguments.throwableArg();
     }
 
 }

@@ -16,16 +16,11 @@ public class JavaUtilLogWriter implements LogWriter, EventLogger {
     public void writeLogEvent(LogEvent logEvent) {
         Logger logger = Logger.getLogger(logEvent.getLogCategoryName());
         Level julLevel = logEvent.getLogLevel().mapLevel(levelMap);
+
         LogRecord logRecord = new LogRecord(julLevel, logEvent.getMessage());
-        Object[] detail = logEvent.getArgs();
-
-
-//        if (logEvent.hasThrowableArg()) {
         logRecord.setThrown(logEvent.throwableArg());
-        detail = logEvent.getArgs();
-//        }
+        logRecord.setParameters(logEvent.getArgs());
 
-        logRecord.setParameters(detail);
         logger.log(logRecord);
     }
 

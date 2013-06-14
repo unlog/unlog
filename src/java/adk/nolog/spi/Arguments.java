@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ArgumentDescriber {
+public class Arguments {
     private final LinkedList<Object> args = new LinkedList<Object>();
     private Throwable throwable;
 
-    public ArgumentDescriber(Object[] args) {
+    public Arguments(Object[] args) {
         if (args != null) {
             this.args.addAll(Arrays.asList(args));
         }
@@ -20,7 +20,7 @@ public class ArgumentDescriber {
         return args;
     }
 
-    public Throwable throwable() {
+    public Throwable throwableArg() {
         return throwable;
     }
 
