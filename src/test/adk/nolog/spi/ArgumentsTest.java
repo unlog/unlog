@@ -2,56 +2,57 @@ package adk.nolog.spi;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class ArgumentsTest {
 
     @Test
     public void shouldHandleNoArgs() {
-        Arguments arguments = givenAnArgumentDescriber().withNoArgs().build();
+        Arguments arguments = givenArguments().withNoArgs().build();
         assertThat(arguments.args(), is(not(nullValue())));
-        assertThat(arguments.args().size(), is(0));
+        assertThat(arguments.size(), is(0));
         assertThat(arguments.throwableArg(), is(nullValue()));
     }
 
     @Test
     public void shouldHandleOneArg() throws NoSuchMethodException {
-        Arguments arguments = givenAnArgumentDescriber().withOneArg().build();
-        assertThat(arguments.args().size(), is(1));
+        Arguments arguments = givenArguments().withOneArg().build();
+        assertThat(arguments.size(), is(1));
         assertThat(arguments.throwableArg(), is(nullValue()));
     }
 
     @Test
     public void shouldHandleMultipleArgs() throws NoSuchMethodException {
-        Arguments arguments = givenAnArgumentDescriber().withMultipleArgs().build();
-        assertThat(arguments.args().size(), is(greaterThan(1)));
+        Arguments arguments = givenArguments().withMultipleArgs().build();
+        assertThat(arguments.size(), is(greaterThan(1)));
         assertThat(arguments.throwableArg(), is(nullValue()));
     }
 
     @Test
     public void shouldHandleNoArgsAndAnException() throws NoSuchMethodException {
-        Arguments arguments = givenAnArgumentDescriber().withAnException().build();
-        assertThat(arguments.args().size(), is(0));
+        Arguments arguments = givenArguments().withAnException().build();
+        assertThat(arguments.size(), is(0));
         assertThat(arguments.throwableArg(), is(not(nullValue())));
     }
 
     @Test
     public void shouldHandleArgAndException() {
-        Arguments arguments = givenAnArgumentDescriber().withArgAndException().build();
-        assertThat(arguments.args().size(), is(1));
+        Arguments arguments = givenArguments().withArgAndException().build();
+        assertThat(arguments.size(), is(1));
         assertThat(arguments.throwableArg(), is(not(nullValue())));
     }
 
 
-    private ArgumentDescriberFixture givenAnArgumentDescriber() {
-        return new ArgumentDescriberFixture();
+    private ArgumentFixture givenArguments() {
+        return new ArgumentFixture();
     }
 
 
-    private class ArgumentDescriberFixture {
+    private class ArgumentFixture {
 
         private Object[] args;
 
@@ -59,27 +60,27 @@ public class ArgumentsTest {
             return new Arguments(args);
         }
 
-        private ArgumentDescriberFixture withNoArgs() {
+        private ArgumentFixture withNoArgs() {
             args = null;
             return this;
         }
 
-        public ArgumentDescriberFixture withOneArg() throws NoSuchMethodException {
+        public ArgumentFixture withOneArg() throws NoSuchMethodException {
             args = new Object[]{"some arg"};
             return this;
         }
 
-        public ArgumentDescriberFixture withMultipleArgs() throws NoSuchMethodException {
+        public ArgumentFixture withMultipleArgs() throws NoSuchMethodException {
             args = new Object[]{"one", "two"};
             return this;
         }
 
-        public ArgumentDescriberFixture withAnException() throws NoSuchMethodException {
+        public ArgumentFixture withAnException() throws NoSuchMethodException {
             args = new Object[]{new Exception()};
             return this;
         }
 
-        public ArgumentDescriberFixture withArgAndException() {
+        public ArgumentFixture withArgAndException() {
             args = new Object[]{"an arg", new Exception()};
             return this;
         }

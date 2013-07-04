@@ -28,7 +28,7 @@ public class LogEvent {
     }
 
     public Object[] getArgs() {
-        return arguments.args().toArray();
+        return arguments.argsAsArray();
     }
 
     public Throwable throwableArg() {

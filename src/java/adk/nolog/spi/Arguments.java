@@ -12,7 +12,7 @@ public class Arguments {
         if (args != null) {
             this.args.addAll(Arrays.asList(args));
         }
-        throwable = getThrowable();
+        throwable = getThrowableFromArgsList();
         this.args.remove(throwable);
     }
 
@@ -24,7 +24,7 @@ public class Arguments {
         return throwable;
     }
 
-    private Throwable getThrowable() {
+    private Throwable getThrowableFromArgsList() {
         return (Throwable) (hasThrowable() ? lastArg() : null);
     }
 
@@ -38,5 +38,13 @@ public class Arguments {
 
     private boolean hasArgs() {
         return !args.isEmpty();
+    }
+
+    int size() {
+        return args().size();
+    }
+
+    public Object[] argsAsArray() {
+        return args().toArray();
     }
 }
