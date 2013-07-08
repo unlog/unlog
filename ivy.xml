@@ -1,0 +1,7 @@
+<ivy-module version="2.3">
+    <info organisation="nolog" module="nolog"/>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="4.11"/>
+        <dependency org="org.jmock" name="jmock-junit4" rev="2.6.0"/>
+    </dependencies>
+</ivy-module>
