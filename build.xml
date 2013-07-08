@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" default="dist" name="nolog">
 
+    <property name="project.version.next" value="0.1"/>
+
     <property name="project.dir" location="${ant.file}/.."/>
     <property name="dev.root" value="${project.dir}/.."/>
     <property name="build.root" value="${dev.root}/BUILD"/>
@@ -36,7 +38,7 @@
         </sequential>
     </macrodef>
 
-    <target name="ivy.installed" unless="skip.download">
+    <target name="ivy" unless="skip.download">
         <mkdir dir="${ivy.jar.dir}"/>
         <!--
          download Ivy from web site so that it can be used even without any special installation
@@ -48,6 +50,8 @@
             <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
         </path>
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
+        <ivy:settings file="${project.dir}/ivysettings.xml"/>
     </target>
 
     <target name="production.classes">
@@ -66,7 +70,7 @@
         <path id="production.classpath" location="${production.classes.dir}"/>
     </target>
 
-    <target name="test.classes" depends="production.classes,ivy.installed">
+    <target name="test.classes" depends="production.classes,ivy">
 
         <property name="test.src.dir" value="src/test"/>
         <property name="test.classes.dir" value="${build.dir}/test/classes"/>
@@ -115,6 +119,25 @@
         <path id="dist.classpath">
             <pathelement location="${jarfile}"/>
         </path>
+    </target>
+
+    <target name="pom" depends="ivy">
+        <ivy:makepom ivyfile="ivy.xml" pomfile="${dist.dir}/${ant.project.name}.pom">
+            <ivy:mapping conf="default" scope="compile"/>
+        </ivy:makepom>
+    </target>
+
+    <target name="snapshot" depends="dist, ivy, pom">
+        <ivy:publish resolver="release" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
+                     publishivy="false">
+            <ivy:artifacts pattern="${dist.dir}/[artifact].[ext]"/>
+        </ivy:publish>
+    </target>
+
+    <target name="release" depends="dist, ivy">
+        <ivy:publish resolver="release" pubrevision="${project.version.next}" publishivy="false">
+            <ivy:artifacts pattern="${dist.dir}/[type]s/[artifact].[ext]"/>
+        </ivy:publish>
     </target>
 
     <target name="clean" depends="clean.build, clean.dist"/>
