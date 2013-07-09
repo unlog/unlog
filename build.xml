@@ -51,7 +51,7 @@
         </path>
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
-        <ivy:settings file="${project.dir}/ivysettings.xml"/>
+        <ivy:settings file="${project.dir}/ivy/ivysettings.xml"/>
     </target>
 
     <target name="production.classes">
@@ -75,7 +75,7 @@
         <property name="test.src.dir" value="src/test"/>
         <property name="test.classes.dir" value="${build.dir}/test/classes"/>
         <ivy:retrieve pattern="${lib.dir}/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
-        <ivy:cachepath pathid="test.dependencies.classpath"/>
+        <ivy:cachepath pathid="test.dependencies.classpath" conf="test"/>
         <path id="test.compilation.classpath">
             <path refid="production.classpath"/>
             <path refid="test.dependencies.classpath"/>
@@ -111,7 +111,20 @@
         </junit>
     </target>
 
-    <target name="dist" depends="production.classes, test">
+    <target name="javadoc.jar">
+        <property name="javadoc.jarfile" value="${dist.dir}/${ant.project.name}-javadoc.jar"/>
+        <jar destfile="${javadoc.jarfile}">
+            <fileset dir="${production.src.dir}"/>
+        </jar>
+    </target>
+    <target name="sources.jar">
+        <property name="sources.jarfile" value="${dist.dir}/${ant.project.name}-sources.jar"/>
+        <jar destfile="${sources.jarfile}">
+            <fileset dir="${production.src.dir}"/>
+        </jar>
+    </target>
+
+    <target name="dist" depends="production.classes, test, javadoc.jar, sources.jar">
         <property name="jarfile" value="${dist.dir}/${ant.project.name}.jar"/>
         <jar destfile="${jarfile}">
             <fileset refid="production.classes.fileset"/>
@@ -122,33 +135,45 @@
     </target>
 
     <target name="pom" depends="ivy">
-        <ivy:makepom ivyfile="ivy.xml" pomfile="${dist.dir}/${ant.project.name}.pom">
+        <property name="ivy.pom.name" value="${ant.project.name}"/>
+        <property name="scm.url" value="https://github.com/aknauf/nolog.git"/>
+        <property name="scm.connection" value="${scm.url}"/>
+        <ivy:makepom ivyfile="ivy.xml"
+                     templatefile="ivy/pom-template.xml"
+                     pomfile="${dist.dir}/${ant.project.name}.pom"
+                     conf="default"
+                     artifactpackaging="jar"
+                     description="NoLog - An (almost) invisible logging framework."
+                >
             <ivy:mapping conf="default" scope="compile"/>
+            <ivy:mapping conf="test" scope="test"/>
         </ivy:makepom>
     </target>
 
     <target name="snapshot" depends="dist, ivy, pom">
         <ivy:publish resolver="release" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
                      publishivy="false">
-            <ivy:artifacts pattern="${dist.dir}/[artifact].[ext]"/>
+            <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
         </ivy:publish>
     </target>
 
     <target name="release" depends="dist, ivy">
         <ivy:publish resolver="release" pubrevision="${project.version.next}" publishivy="false">
-            <ivy:artifacts pattern="${dist.dir}/[type]s/[artifact].[ext]"/>
+            <ivy:artifacts pattern="${dist.dir}/[type]s/[artifact][ext]"/>
         </ivy:publish>
     </target>
 
     <target name="clean" depends="clean.build, clean.dist"/>
 
-    <target name="clean.build" if="build.dirty">
+    <target name="clean.build">
+        <echo>Cleaning build dir: ${build.dir}</echo>
         <delete includeemptydirs="true">
-            <fileset dir="${build.dir}"/>
+            <fileset dir="${build.dir}" erroronmissingdir="false"/>
         </delete>
     </target>
 
-    <target name="clean.dist" if="dist.dirty">
+    <target name="clean.dist">
+        <echo>Cleaning dist dir: ${dist.dir}</echo>
         <delete includeemptydirs="true">
             <fileset dir="${dist.dir}" erroronmissingdir="false"/>
         </delete>

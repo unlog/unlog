@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.3"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation=
-                    "http://ant.apache.org/ivy/schemas/ivy.xsd"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd"
+            xmlns:m="http://ant.apache.org/ivy/maven"
         >
-    <info organisation="nolog" module="nolog"/>
+    <info organisation="nolog" module="nolog" revision="0.1">
+        <license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+        <description homepage="https://github.com/aknauf/nolog">NoLog - An (almost) invisible logging framework.
+        </description>
+    </info>
 
-    <configurations>
+    <configurations defaultconf="default">
         <conf name="default"/>
+        <conf name="test"/>
         <conf name="sources"/>
     </configurations>
 
     <publications>
-        <artifact type="pom" ext="pom" conf="default"/>
-        <artifact type="jar" ext="jar" conf="default"/>
-        <!--<artifact type="source" ext="-sources.jar" conf="sources" m:classifier="sources"/>-->
+        <artifact type="pom" ext=".pom" conf="default"/>
+        <artifact type="jar" ext=".jar" conf="default"/>
+        <artifact type="javadoc" ext="-javadoc.jar" conf="default"/>
+        <artifact type="source" ext="-sources.jar" conf="sources" m:classifier="sources"/>
     </publications>
 
     <dependencies>
-        <dependency org="junit" name="junit" rev="4.11"/>
-        <dependency org="org.jmock" name="jmock-junit4" rev="2.6.0"/>
+        <dependency org="junit" name="junit" rev="4.11" conf="test->*"/>
+        <dependency org="org.jmock" name="jmock-junit4" rev="2.6.0" conf="test->*"/>
     </dependencies>
 
 </ivy-module>

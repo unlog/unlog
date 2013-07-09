@@ -6,7 +6,7 @@
                  changingPattern=".*SNAPSHOT"/>
         <filesystem name="release" m2compatible="true" checksums="sha1">
             <artifact
-                    pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+                    pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[artifact]-[revision][ext]"/>
         </filesystem>
         <chain name="main-chain">
             <resolver ref="public"/>
