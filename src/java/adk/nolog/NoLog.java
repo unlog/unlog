@@ -15,14 +15,12 @@ public class NoLog {
 
     public static <L> L createLogger(Class<L> loggerInterface) {
 
+        return createLogger(loggerInterface, null);
+    }
+
+    private static <L> L createLogger(Class<L> loggerInterface, Arguments context) {
         //noinspection unchecked
-        return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), message(method), new Arguments(args)));
-                return null;
-            }
-        });
+        return (L) Proxy.newProxyInstance(NoLog.class.getClassLoader(), new Class[]{loggerInterface}, new LogInvocationHandler());
     }
 
     private static String message(Method method) {
@@ -47,4 +45,18 @@ public class NoLog {
         return LogLevel.DEBUG;
     }
 
+    private static class LogInvocationHandler implements InvocationHandler {
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            Arguments arguments = new Arguments(args);
+            LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), message(method), arguments));
+
+            if (!Void.TYPE.equals(method.getReturnType())) {
+                return createLogger(method.getReturnType(), arguments);
+            }
+
+            return null;
+        }
+    }
 }

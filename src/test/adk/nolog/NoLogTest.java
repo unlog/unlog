@@ -4,12 +4,16 @@ package adk.nolog;
 import adk.nolog.test.LoggerFixture;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import static adk.nolog.LogLevel.ERROR;
 import static java.util.logging.Level.FINEST;
 import static java.util.logging.Level.SEVERE;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 public class NoLogTest {
 
@@ -20,6 +24,9 @@ public class NoLogTest {
     public LoggerFixture loggerFixture = LoggerFixture.createLoggerFixture(mockery, TestLogger.class.getCanonicalName());
 
     private TestLogger log;
+
+    @Rule
+    public LoggerFixture constructionProjectLoggerFixture = LoggerFixture.createLoggerFixture(mockery, ConstructionProject.class.getCanonicalName());
 
     @Before
     public void setUp() throws Exception {
@@ -71,6 +78,27 @@ public class NoLogTest {
         log.ohNoTheresBeenAnException("while processing some transaction", e);
     }
 
+    @Test
+    @Ignore
+    public void shouldLogTransactionContextAlongWithTransactionEvents() {
+
+        loggerFixture.setLevel(FINEST);
+
+        Customer forThisCustomer = new Customer("Bob");
+        String atThisAddress = "at this address";
+        Object[] expectedContext = {atThisAddress, forThisCustomer};
+        loggerFixture.expectLogStatement(FINEST, "startedBuildingAHouse", expectedContext);
+
+        ConstructionProject house = log.startedBuildingAHouse(atThisAddress, forThisCustomer);
+
+        assertThat(house, not(nullValue()));
+
+        constructionProjectLoggerFixture.setLevel(FINEST);
+        constructionProjectLoggerFixture.expectLogStatement(FINEST, "roofComplete", expectedContext);
+
+        house.roofComplete();
+    }
+
     public interface TestLogger {
         void somethingHappened();
 
@@ -82,6 +110,16 @@ public class NoLogTest {
         void ohNoTheresBeenAnException(Exception e);
 
         void ohNoTheresBeenAnException(String details, Exception e);
+
+        ConstructionProject startedBuildingAHouse(String address, Customer customer);
     }
 
+    public class Customer {
+        public Customer(String name) {
+        }
+    }
+
+    public interface ConstructionProject {
+        void roofComplete();
+    }
 }
