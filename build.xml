@@ -111,12 +111,18 @@
         </junit>
     </target>
 
-    <target name="javadoc.jar">
+    <target name="javadoc.jar" depends="production.classes">
+        <property name="javadoc.dir" location="${build.dir}/javadoc"/>
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc sourcepath="${production.src.dir}" destdir="${javadoc.dir}">
+            <classpath refid="production.compilation.classpath"/>
+        </javadoc>
         <property name="javadoc.jarfile" value="${dist.dir}/${ant.project.name}-javadoc.jar"/>
         <jar destfile="${javadoc.jarfile}">
-            <fileset dir="${production.src.dir}"/>
+            <fileset dir="${javadoc.dir}"/>
         </jar>
     </target>
+
     <target name="sources.jar">
         <property name="sources.jarfile" value="${dist.dir}/${ant.project.name}-sources.jar"/>
         <jar destfile="${sources.jarfile}">
@@ -159,7 +165,7 @@
 
     <target name="release" depends="dist, ivy">
         <ivy:publish resolver="release" pubrevision="${project.version.next}" publishivy="false">
-            <ivy:artifacts pattern="${dist.dir}/[type]s/[artifact][ext]"/>
+            <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
         </ivy:publish>
     </target>
 
