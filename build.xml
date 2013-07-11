@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" default="dist" name="nolog">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" default="dist" name="unlog">
 
     <property name="project.version.next" value="0.1"/>
 
@@ -142,14 +142,14 @@
 
     <target name="pom" depends="ivy">
         <property name="ivy.pom.name" value="${ant.project.name}"/>
-        <property name="scm.url" value="https://github.com/aknauf/nolog.git"/>
+        <property name="scm.url" value="https://github.com/unlog/unlog.git"/>
         <property name="scm.connection" value="${scm.url}"/>
         <ivy:makepom ivyfile="ivy.xml"
                      templatefile="ivy/pom-template.xml"
                      pomfile="${dist.dir}/${ant.project.name}.pom"
                      conf="default"
                      artifactpackaging="jar"
-                     description="NoLog - An (almost) invisible logging framework."
+                     description="UnLog - An (almost) invisible logging framework."
                 >
             <ivy:mapping conf="default" scope="compile"/>
             <ivy:mapping conf="test" scope="test"/>
