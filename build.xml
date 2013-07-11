@@ -28,13 +28,26 @@
             <pathconvert refid="@{classpathid}" property="@{classpathid}_txt"/>
             <echo>CLASSPATH: ${@{classpathid}_txt}</echo>
 
-            <javac debug="@{debug}" optimize="@{optimize}" destdir="@{dest}" source="7" includeantruntime="false">
+            <javac debug="@{debug}" optimize="@{optimize}" destdir="@{dest}" source="6" includeantruntime="false">
                 <src location="@{src}"/>
                 <classpath refid="@{classpathid}"/>
             </javac>
             <copy todir="@{dest}">
                 <fileset dir="@{src}" excludes="**/*.java"/>
             </copy>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="git">
+        <attribute name="command"/>
+        <attribute name="dir" default=""/>
+        <element name="args" optional="true"/>
+        <sequential>
+            <echo message="git @{command}"/>
+            <exec executable="git" dir="@{dir}">
+                <arg value="@{command}"/>
+                <args/>
+            </exec>
         </sequential>
     </macrodef>
 
@@ -156,14 +169,32 @@
         </ivy:makepom>
     </target>
 
-    <target name="snapshot" depends="dist, ivy, pom">
+    <target name="snapshot" depends="clean, dist, pom">
+
         <ivy:publish resolver="release" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
                      publishivy="false">
             <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
         </ivy:publish>
     </target>
 
-    <target name="release" depends="dist, ivy">
+    <target name="release" depends="clean, dist, pom">
+
+        <git command="tag">
+            <args>
+                <arg value="-a"/>
+                <arg value="v${project.version.next}"/>
+                <arg value="-m"/>
+                <arg value="Release ${project.version.next}"/>
+            </args>
+        </git>
+
+        <git command="push">
+            <args>
+                <arg value="origin"/>
+                <arg value="v${project.version.next}"/>
+            </args>
+        </git>
+
         <ivy:publish resolver="release" pubrevision="${project.version.next}" publishivy="false">
             <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
         </ivy:publish>

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/nolog.iml" filepath="$PROJECT_DIR$/nolog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/unlog.iml" filepath="$PROJECT_DIR$/unlog.iml" />
     </modules>
   </component>
 </project>
