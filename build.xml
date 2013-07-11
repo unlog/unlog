@@ -16,6 +16,14 @@
     <property name="ivy.jar.dir" value="${build.dir}/ivy"/>
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
 
+    <macrodef name="echocp">
+        <attribute name="classpathid"/>
+        <sequential>
+            <pathconvert refid="@{classpathid}" property="@{classpathid}_txt"/>
+            <echo>CLASSPATH: ${@{classpathid}_txt}</echo>
+        </sequential>
+    </macrodef>
+
     <macrodef name="compile.java">
         <attribute name="src"/>
         <attribute name="dest"/>
@@ -25,8 +33,7 @@
         <sequential>
             <mkdir dir="@{dest}"/>
 
-            <pathconvert refid="@{classpathid}" property="@{classpathid}_txt"/>
-            <echo>CLASSPATH: ${@{classpathid}_txt}</echo>
+            <echocp classpathid="@{classpathid}"/>
 
             <javac debug="@{debug}" optimize="@{optimize}" destdir="@{dest}" source="6" includeantruntime="false">
                 <src location="@{src}"/>
@@ -51,20 +58,35 @@
         </sequential>
     </macrodef>
 
+    <macrodef name="mvn.fetch">
+        <attribute name="org"/>
+        <attribute name="artifact"/>
+        <attribute name="version"/>
+        <sequential>
+            <get src="http://repo1.maven.org/maven2/@{org}/@{artifact}/@{version}/@{artifact}-@{version}.jar"
+                 dest="${ivy.jar.dir}/@{artifact}-@{version}.jar" usetimestamp="true"/>
+        </sequential>
+    </macrodef>
+
     <target name="ivy" unless="skip.download">
         <mkdir dir="${ivy.jar.dir}"/>
         <!--
          download Ivy from web site so that it can be used even without any special installation
         -->
         <echo message="installing ivy..."/>
-        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
-             dest="${ivy.jar.file}" usetimestamp="true"/>
+        <mvn.fetch org="org/apache/ivy" artifact="ivy" version="2.3.0"/>
+        <mvn.fetch org="org/bouncycastle" artifact="bcprov-jdk16" version="1.46"/>
+        <mvn.fetch org="org/bouncycastle" artifact="bcpg-jdk16" version="1.46"/>
         <path id="ivy.lib.path">
             <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
         </path>
+        <echocp classpathid="ivy.lib.path"/>
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
-        <ivy:settings file="${project.dir}/ivy/ivysettings.xml"/>
+        <input message="please enter your PGP password: " addproperty="pgp.password">
+            <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
+        </input>
+        <ivy:configure file="${project.dir}/ivy/ivysettings.xml"/>
     </target>
 
     <target name="production.classes">
@@ -87,7 +109,6 @@
 
         <property name="test.src.dir" value="src/test"/>
         <property name="test.classes.dir" value="${build.dir}/test/classes"/>
-        <ivy:retrieve pattern="${lib.dir}/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
         <ivy:cachepath pathid="test.dependencies.classpath" conf="test"/>
         <path id="test.compilation.classpath">
             <path refid="production.classpath"/>
@@ -172,7 +193,7 @@
     <target name="snapshot" depends="clean, dist, pom">
 
         <ivy:publish resolver="release" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
-                     publishivy="false">
+                     publishivy="false" >
             <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
         </ivy:publish>
     </target>

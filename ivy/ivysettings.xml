@@ -1,10 +1,14 @@
 <ivysettings>
+    <!--<credentials host="repository.apache.org" realm="Sonatype Nexus Repository Manager" username="${upload.user}" passwd="${upload.password}"/>-->
+    <signers>
+        <pgp name="release-key" password="${pgp.password}" secring="${user.home}/AppData/Roaming/gnupg/secring.gpg"/>
+    </signers>
     <settings defaultResolver="main-chain"/>
     <resolvers>
         <ibiblio name="public" m2compatible="true"/>
         <ibiblio name="local" m2compatible="true" root="file://${user.home}/.m2/repository"
                  changingPattern=".*SNAPSHOT"/>
-        <filesystem name="release" m2compatible="true" checksums="sha1">
+        <filesystem name="release" m2compatible="true" checksums="sha1" signer="release-key">
             <artifact
                     pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[artifact]-[revision][ext]"/>
         </filesystem>
