@@ -165,7 +165,7 @@
         </jar>
     </target>
 
-    <target name="dist" depends="production.classes, test, javadoc.jar, sources.jar">
+    <target name="dist" depends="production.classes, test, javadoc.jar, sources.jar, pom">
         <property name="jarfile" value="${dist.dir}/${ant.project.name}.jar"/>
         <jar destfile="${jarfile}">
             <fileset refid="production.classes.fileset"/>
@@ -177,15 +177,16 @@
 
     <target name="pom" depends="ivy">
         <property name="ivy.pom.name" value="${ant.project.name}"/>
+        <property name="ivy.pom.version" value="${built.version}"/>
+        <property name="ivy.pom.packaging" value="jar"/>
         <property name="scm.url" value="https://github.com/unlog/unlog.git"/>
         <property name="scm.connection" value="${scm.url}"/>
-        <property name="ivy.pom.version" value="${built.version}"/>
 
         <ivy:makepom ivyfile="ivy.xml"
                      templatefile="ivy/pom-template.xml"
                      pomfile="${dist.dir}/${ant.project.name}.pom"
                      conf="default"
-                     artifactpackaging="jar"
+                     artifactpackaging="${ivy.pom.packaging}"
                      description="UnLog - An (almost) invisible logging framework."
                 >
             <ivy:mapping conf="default" scope="compile"/>
@@ -214,7 +215,7 @@
         </git>
     </target>
 
-    <target name="snapshot" depends="clean, dist, pom, tag-snapshot">
+    <target name="snapshot" depends="clean, dist, tag-snapshot">
         <ivy:publish resolver="snapshot" pubrevision="${built.version}" overwrite="true"
                      publishivy="false" forcedeliver="true">
             <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
@@ -243,8 +244,9 @@
     </target>
 
     <target name="release" depends="clean, dist, pom, tag-release">
-        <ivy:publish resolver="staging" pubrevision="${built.version}" publishivy="false" overwrite="true" forcedeliver="true">
-            <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
+        <ivy:publish resolver="release" pubrevision="${built.version}" publishivy="false" overwrite="true"
+                     forcedeliver="true">
+        <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
 
