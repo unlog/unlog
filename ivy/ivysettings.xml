@@ -15,7 +15,7 @@
         </filesystem>
         <url name="snapshot" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${snapshot.url}/[organisation]/${repository.pattern}"/>
+                    pattern="${snapshot.url}/${repository.pattern}"/>
         </url>
         <url name="staging" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
