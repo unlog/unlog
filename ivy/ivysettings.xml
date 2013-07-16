@@ -10,15 +10,15 @@
                  changingPattern=".*SNAPSHOT"/>
         <filesystem name="dry" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${user.home}/.m2/repository/[organisation]/[module]/[artifact]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
+                    pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
         </filesystem>
         <url name="snapshot" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${snapshot.url}/[organisation]/[module]/[artifact]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
+                    pattern="${snapshot.url}/[organisation]/[module]/[artifact]/[artifact]-[revision](-[classifier]).[ext]"/>
         </url>
         <url name="staging" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${staging.url}/[organisation]/[module]/[artifact]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
+                    pattern="${staging.url}/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
         </url>
         <chain name="main-chain">
             <resolver ref="public"/>

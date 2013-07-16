@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" default="dist" name="unlog">
-
-    <property name="project.version.next" value="0.2"/>
+    <property file="release.properties" />
+    <property file="${user.home}/unlog.properties" />
 
     <property name="project.dir" location="${ant.file}/.."/>
     <property name="dev.root" value="${project.dir}/.."/>
@@ -54,7 +54,7 @@
         <element name="args" optional="true"/>
         <sequential>
             <echo message="git @{command}"/>
-            <exec executable="git" dir="@{dir}">
+            <exec executable="git" dir="@{dir}" failonerror="true">
                 <arg value="@{command}"/>
                 <args/>
             </exec>
@@ -86,9 +86,6 @@
         <echocp classpathid="ivy.lib.path"/>
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
-        <input message="please enter your PGP password: " addproperty="pgp.password">
-            <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
-        </input>
         <ivy:configure file="${project.dir}/ivy/ivysettings.xml"/>
     </target>
 
@@ -193,33 +190,55 @@
         </ivy:makepom>
     </target>
 
-    <target name="tag">
+    <target name="tag-snapshot">
+        <buildnumber/>
+        <property name="snapshot.version" value="${project.version.working}-${build.number}-SNAPSHOT"/>
+
         <git command="tag">
             <args>
                 <arg value="-a"/>
-                <arg value="v${project.version.next}"/>
+                <arg value="v${snapshot.version}"/>
                 <arg value="-m"/>
-                <arg value="Release ${project.version.next}"/>
+                <arg value="Snaphot ${snapshot.version}"/>
             </args>
         </git>
 
         <git command="push">
             <args>
                 <arg value="origin"/>
-                <arg value="v${project.version.next}"/>
+                <arg value="v${snapshot.version}"/>
             </args>
         </git>
     </target>
 
-    <target name="snapshot" depends="clean, dist, pom, tag">
-        <ivy:publish resolver="dry" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
+    <target name="snapshot" depends="clean, dist, pom, tag-snapshot">
+        <ivy:publish resolver="snapshot" pubrevision="${snapshot.version}" overwrite="true"
                      publishivy="false" >
             <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
 
-    <target name="release" depends="clean, dist, pom">
-        <ivy:publish resolver="release" pubrevision="${project.version.next}" publishivy="false">
+    <target name="tag-release">
+
+        <git command="tag">
+            <args>
+                <arg value="-a"/>
+                <arg value="v${project.version.working}"/>
+                <arg value="-m"/>
+                <arg value="Release ${project.version.working}"/>
+            </args>
+        </git>
+
+        <git command="push">
+            <args>
+                <arg value="origin"/>
+                <arg value="v${project.version.working}"/>
+            </args>
+        </git>
+    </target>
+
+    <target name="release" depends="clean, dist, pom, tag-release">
+        <ivy:publish resolver="dry" pubrevision="${project.version.working}" publishivy="false" overwrite="true">
             <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
