@@ -244,7 +244,7 @@
     </target>
 
     <target name="release" depends="clean, dist, pom, tag-release">
-        <ivy:publish resolver="release" pubrevision="${built.version}" publishivy="false" overwrite="true"
+        <ivy:publish resolver="staging" pubrevision="${built.version}" publishivy="false" overwrite="true"
                      forcedeliver="true">
         <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
