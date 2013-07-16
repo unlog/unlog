@@ -1,24 +1,25 @@
 <ivysettings>
-    <!--<credentials host="repository.apache.org" realm="Sonatype Nexus Repository Manager" username="${upload.user}" passwd="${upload.password}"/>-->
+    <settings defaultResolver="main-chain"/>
+
+    <credentials host="oss.sonatype.org" realm="Sonatype Nexus Repository Manager" username="${mavencentral.user}" passwd="${mavencentral.password}"/>
     <signers>
         <pgp name="release-key" password="${pgp.password}" secring="${user.home}/AppData/Roaming/gnupg/secring.gpg"/>
     </signers>
-    <settings defaultResolver="main-chain"/>
     <resolvers>
         <ibiblio name="public" m2compatible="true"/>
         <ibiblio name="local" m2compatible="true" root="file://${user.home}/.m2/repository"
                  changingPattern=".*SNAPSHOT"/>
         <filesystem name="dry" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${user.home}/.m2/repository/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
+                    pattern="${user.home}/.m2/repository/[organisation]/[module]/[artifact]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
         </filesystem>
         <url name="snapshot" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${snapshot.url}/[organisation]/[module]/[artifact]/[artifact]-[revision](-[classifier]).[ext]"/>
+                    pattern="${snapshot.url}/[organisation]/[module]/[artifact]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
         </url>
         <url name="staging" m2compatible="true" checksums="sha1, md5" signer="release-key">
             <artifact
-                    pattern="${staging.url}/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
+                    pattern="${staging.url}/[organisation]/[module]/[artifact]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
         </url>
         <chain name="main-chain">
             <resolver ref="public"/>

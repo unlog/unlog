@@ -80,6 +80,7 @@
         <mvn.fetch org="org/apache/ivy" artifact="ivy" version="2.3.0"/>
         <mvn.fetch org="org/bouncycastle" artifact="bcprov-jdk16" version="1.46"/>
         <mvn.fetch org="org/bouncycastle" artifact="bcpg-jdk16" version="1.46"/>
+        <mvn.fetch org="commons-httpclient" artifact="commons-httpclient" version="3.1"/>
         <path id="ivy.lib.path">
             <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
         </path>
@@ -178,6 +179,8 @@
         <property name="ivy.pom.name" value="${ant.project.name}"/>
         <property name="scm.url" value="https://github.com/unlog/unlog.git"/>
         <property name="scm.connection" value="${scm.url}"/>
+        <property name="ivy.pom.version" value="${built.version}"/>
+
         <ivy:makepom ivyfile="ivy.xml"
                      templatefile="ivy/pom-template.xml"
                      pomfile="${dist.dir}/${ant.project.name}.pom"
@@ -192,53 +195,55 @@
 
     <target name="tag-snapshot">
         <buildnumber/>
-        <property name="snapshot.version" value="${project.version.working}-${build.number}-SNAPSHOT"/>
+        <property name="built.version" value="${project.version.working}-${build.number}-SNAPSHOT"/>
 
         <git command="tag">
             <args>
                 <arg value="-a"/>
-                <arg value="v${snapshot.version}"/>
+                <arg value="v${built.version}"/>
                 <arg value="-m"/>
-                <arg value="Snaphot ${snapshot.version}"/>
+                <arg value="Snaphot ${built.version}"/>
             </args>
         </git>
 
         <git command="push">
             <args>
                 <arg value="origin"/>
-                <arg value="v${snapshot.version}"/>
+                <arg value="v${built.version}"/>
             </args>
         </git>
     </target>
 
     <target name="snapshot" depends="clean, dist, pom, tag-snapshot">
-        <ivy:publish resolver="snapshot" pubrevision="${snapshot.version}" overwrite="true"
-                     publishivy="false" >
+        <ivy:publish resolver="snapshot" pubrevision="${built.version}" overwrite="true"
+                     publishivy="false" forcedeliver="true">
             <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
 
     <target name="tag-release">
 
+        <property name="built.version" value="${project.version.working}"/>
+
         <git command="tag">
             <args>
                 <arg value="-a"/>
-                <arg value="v${project.version.working}"/>
+                <arg value="v${built.version}"/>
                 <arg value="-m"/>
-                <arg value="Release ${project.version.working}"/>
+                <arg value="Release ${built.version}"/>
             </args>
         </git>
 
         <git command="push">
             <args>
                 <arg value="origin"/>
-                <arg value="v${project.version.working}"/>
+                <arg value="v${built.version}"/>
             </args>
         </git>
     </target>
 
     <target name="release" depends="clean, dist, pom, tag-release">
-        <ivy:publish resolver="dry" pubrevision="${project.version.working}" publishivy="false" overwrite="true">
+        <ivy:publish resolver="dry" pubrevision="${project.version.working}" publishivy="false" overwrite="true" >
             <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
