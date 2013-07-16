@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" default="dist" name="unlog">
 
-    <property name="project.version.next" value="0.1"/>
+    <property name="project.version.next" value="0.2"/>
 
     <property name="project.dir" location="${ant.file}/.."/>
     <property name="dev.root" value="${project.dir}/.."/>
@@ -15,6 +15,9 @@
     <property name="ivy.install.version" value="2.3.0"/>
     <property name="ivy.jar.dir" value="${build.dir}/ivy"/>
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+
+    <property name="snapshot.url" value="https://oss.sonatype.org/content/repositories/snapshots"/>
+    <property name="staging.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
 
     <macrodef name="echocp">
         <attribute name="classpathid"/>
@@ -190,16 +193,7 @@
         </ivy:makepom>
     </target>
 
-    <target name="snapshot" depends="clean, dist, pom">
-
-        <ivy:publish resolver="release" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
-                     publishivy="false" >
-            <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
-        </ivy:publish>
-    </target>
-
-    <target name="release" depends="clean, dist, pom">
-
+    <target name="tag">
         <git command="tag">
             <args>
                 <arg value="-a"/>
@@ -215,9 +209,18 @@
                 <arg value="v${project.version.next}"/>
             </args>
         </git>
+    </target>
 
+    <target name="snapshot" depends="clean, dist, pom, tag">
+        <ivy:publish resolver="dry" pubrevision="${project.version.next}-SNAPSHOT" overwrite="true"
+                     publishivy="false" >
+            <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
+        </ivy:publish>
+    </target>
+
+    <target name="release" depends="clean, dist, pom">
         <ivy:publish resolver="release" pubrevision="${project.version.next}" publishivy="false">
-            <ivy:artifacts pattern="${dist.dir}/[artifact][ext]"/>
+            <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
 

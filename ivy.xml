@@ -6,7 +6,7 @@
         >
     <info organisation="com.github.unlog" module="unlog" revision="0.1">
         <license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
-        <description homepage="https://com.github.com/aknauf/unlog">UnLog - An (almost) invisible logging framework.
+        <description homepage="https://github.com/unlog/unlog">UnLog - An (almost) invisible logging framework.
         </description>
     </info>
 
@@ -17,10 +17,10 @@
     </configurations>
 
     <publications>
-        <artifact type="pom" ext=".pom" conf="default"/>
-        <artifact type="jar" ext=".jar" conf="default"/>
-        <artifact type="javadoc" ext="-javadoc.jar" conf="default"/>
-        <artifact type="source" ext="-sources.jar" conf="sources" m:classifier="sources"/>
+        <artifact type="pom" ext="pom" conf="default"/>
+        <artifact type="jar" ext="jar" conf="default"/>
+        <artifact type="javadoc" ext="jar" conf="default" m:classifier="javadoc"/>
+        <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
     </publications>
 
     <dependencies>
