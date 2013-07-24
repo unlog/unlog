@@ -30,7 +30,7 @@ public class CamelCasePhrase {
             state = state.parseNextCharacter(phrase.charAt(i), elementBuilder);
         }
 
-        state.endOfPhrase(elementBuilder);
+        elementBuilder.endOfPhrase();
     }
 
     public String toSentenceCase() {
@@ -45,7 +45,7 @@ public class CamelCasePhrase {
     }
 
     private String toSentenceCase(String nextWord) {
-        if(isAcronym(nextWord)){
+        if (isAcronym(nextWord)) {
             return nextWord;
         }
         return nextWord.toLowerCase();
@@ -64,8 +64,8 @@ public class CamelCasePhrase {
         return wordToCapitalise.toString();
     }
 
-    private enum ParseState {
-        SeekingAcronymOrWord {
+    private static abstract class ParseState {
+        public static final ParseState SeekingAcronymOrWord = new ParseState() {
             public ParseState parseNextCharacter(char c, ElementBuilder builder) {
                 builder.addCharToElement(c);
                 if (Character.isUpperCase(c)) {
@@ -75,14 +75,14 @@ public class CamelCasePhrase {
                 }
 
             }
-        },
-        SeekingStartOfWord {
+        };
+        public static final ParseState SeekingStartOfWord = new ParseState() {
             public ParseState parseNextCharacter(char c, ElementBuilder builder) {
                 builder.addCharToElement(c);
                 return SeekingAcronymOrWord;
             }
-        },
-        ParsingAcronym {
+        };
+        public static final ParseState ParsingAcronym = new ParseState() {
             @Override
             public ParseState parseNextCharacter(char c, ElementBuilder builder) {
                 if (Character.isLowerCase(c)) {
@@ -95,8 +95,8 @@ public class CamelCasePhrase {
                     return ParsingAcronym;
                 }
             }
-        },
-        ParsingWord {
+        };
+        public static final ParseState ParsingWord = new ParseState() {
             @Override
             public ParseState parseNextCharacter(char c, ElementBuilder builder) {
                 if (Character.isUpperCase(c)) {
@@ -109,13 +109,7 @@ public class CamelCasePhrase {
             }
         };
 
-
         public abstract ParseState parseNextCharacter(char c, ElementBuilder builder);
-
-
-        public void endOfPhrase(ElementBuilder elementBuilder) {
-            elementBuilder.endOfPhrase();
-        }
     }
 
     private class ElementBuilder {

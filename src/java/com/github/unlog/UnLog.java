@@ -31,13 +31,17 @@ public class UnLog {
     private static final LogWriter LOG_WRITER = new JavaUtilLogWriter();
 
     public static <L> L createLogger(Class<L> loggerInterface) {
-
         return createLogger(loggerInterface, null);
     }
 
     private static <L> L createLogger(Class<L> loggerInterface, Arguments context) {
         //noinspection unchecked
-        return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface}, new LogInvocationHandler());
+        return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                return handleLogInvocation(method, args);
+            }
+        });
     }
 
     private static LogCategory categoryName(Method method) {
@@ -58,18 +62,14 @@ public class UnLog {
         return LogLevel.DEBUG;
     }
 
-    private static class LogInvocationHandler implements InvocationHandler {
+    private static Object handleLogInvocation(Method method, Object[] args) {
+        Arguments arguments = new Arguments(args);
+        LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), new LogFormatFactory().logFormat(method), arguments));
 
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Arguments arguments = new Arguments(args);
-            LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), new LogFormatFactory().logFormat(method), arguments));
-
-            if (!Void.TYPE.equals(method.getReturnType())) {
-                return createLogger(method.getReturnType(), arguments);
-            }
-
-            return null;
+        if (!Void.TYPE.equals(method.getReturnType())) {
+            return createLogger(method.getReturnType(), arguments);
         }
+
+        return null;
     }
 }
