@@ -1,7 +1,23 @@
 <?xml version="1.0"?>
+<!--
+  ~ Copyright 2013 Aaron Knauf
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <project xmlns:ivy="antlib:org.apache.ivy.ant" default="dist" name="unlog">
-    <property file="release.properties" />
-    <property file="${user.home}/unlog.properties" />
+    <property file="release.properties"/>
+    <property file="${user.home}/unlog.properties"/>
 
     <property name="project.dir" location="${ant.file}/.."/>
     <property name="dev.root" value="${project.dir}/.."/>
@@ -246,7 +262,7 @@
     <target name="release" depends="clean, dist, pom, tag-release">
         <ivy:publish resolver="staging" pubrevision="${built.version}" publishivy="false" overwrite="true"
                      forcedeliver="true">
-        <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
+            <ivy:artifacts pattern="${dist.dir}/[artifact](-[classifier]).[ext]"/>
         </ivy:publish>
     </target>
 

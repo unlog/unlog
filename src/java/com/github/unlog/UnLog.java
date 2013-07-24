@@ -16,6 +16,7 @@
 
 package com.github.unlog;
 
+import com.github.unlog.internal.LogFormatFactory;
 import com.github.unlog.jul.JavaUtilLogWriter;
 import com.github.unlog.spi.Arguments;
 import com.github.unlog.spi.LogEvent;
@@ -39,12 +40,8 @@ public class UnLog {
         return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface}, new LogInvocationHandler());
     }
 
-    private static String message(Method method) {
-        return method.getName();
-    }
-
-    private static String categoryName(Method method) {
-        return method.getDeclaringClass().getCanonicalName();
+    private static LogCategory categoryName(Method method) {
+        return new LogCategory(method.getDeclaringClass().getCanonicalName());
     }
 
     private static LogLevel determineLogLevel(Method method) {
@@ -66,7 +63,7 @@ public class UnLog {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Arguments arguments = new Arguments(args);
-            LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), message(method), arguments));
+            LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), new LogFormatFactory().logFormat(method), arguments));
 
             if (!Void.TYPE.equals(method.getReturnType())) {
                 return createLogger(method.getReturnType(), arguments);

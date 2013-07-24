@@ -31,6 +31,9 @@ import static org.junit.Assert.*;
 
 public class UnLogTest {
 
+    public static final String MESSAGE_WITH_DETAIL = "Something happened and heres the";
+    public static final String MESSAGE_WITH_EXCEPTION = "Oh no theres been an exception";
+    public static final String ERROR_MESSAGE = "Some sort of error occurred";
     @Rule
     public JUnitRuleMockery mockery = new JUnitRuleMockery();
 
@@ -48,10 +51,10 @@ public class UnLogTest {
     }
 
     @Test
-    public void shouldWriteLogInterfaceMethodNameToJavaUtilLoggingAppender() {
+    public void shouldWriteLogInterfaceMethodNameSplitIntoCamelCaseWordsToJavaUtilLoggingAppender() {
 
         loggerFixture.setLevel(FINEST);
-        loggerFixture.expectLogStatement(FINEST, "somethingHappened");
+        loggerFixture.expectLogStatement(FINEST, "Something happened");
 
         log.somethingHappened();
     }
@@ -60,7 +63,7 @@ public class UnLogTest {
     public void shouldOnlyLogAtLevelSpecifiedInAnnotation() {
 
         loggerFixture.setLevel(SEVERE);
-        loggerFixture.expectLogStatement(SEVERE, "someSortOfErrorOccurred");
+        loggerFixture.expectLogStatement(SEVERE, ERROR_MESSAGE);
 
         log.someSortOfErrorOccurred();
         log.somethingHappened();
@@ -69,7 +72,7 @@ public class UnLogTest {
     @Test
     public void shouldLogArguments() {
         loggerFixture.setLevel(FINEST);
-        loggerFixture.expectLogStatement(FINEST, "somethingHappenedAndHeresThe", new Object[]{"detail"});
+        loggerFixture.expectLogStatement(FINEST, MESSAGE_WITH_DETAIL, new Object[]{"detail"});
 
         log.somethingHappenedAndHeresThe("detail");
     }
@@ -78,7 +81,7 @@ public class UnLogTest {
     public void shouldLogExceptionsUsingTheUnderlyingFrameworkFacility() {
         loggerFixture.setLevel(FINEST);
         Exception e = new Exception();
-        loggerFixture.expectLogStatement(FINEST, "ohNoTheresBeenAnException", e);
+        loggerFixture.expectLogStatement(FINEST, MESSAGE_WITH_EXCEPTION, e);
 
         log.ohNoTheresBeenAnException(e);
     }
@@ -87,7 +90,7 @@ public class UnLogTest {
     public void shouldLogExceptionsAlongWithOtherArguments() {
         loggerFixture.setLevel(FINEST);
         Exception e = new Exception();
-        loggerFixture.expectLogStatement(FINEST, "ohNoTheresBeenAnException", new Object[]{"while processing some transaction"}, e);
+        loggerFixture.expectLogStatement(FINEST, MESSAGE_WITH_EXCEPTION, new Object[]{"while processing some transaction"}, e);
 
         log.ohNoTheresBeenAnException("while processing some transaction", e);
     }

@@ -30,10 +30,10 @@ public class JavaUtilLogWriter implements LogWriter, EventLogger {
 
     @Override
     public void writeLogEvent(LogEvent logEvent) {
-        Logger logger = Logger.getLogger(logEvent.getLogCategoryName());
+        Logger logger = Logger.getLogger(logEvent.getLogCategory().toString());
         Level julLevel = logEvent.getLogLevel().mapLevel(levelMap);
 
-        LogRecord logRecord = new LogRecord(julLevel, logEvent.getMessage());
+        LogRecord logRecord = new LogRecord(julLevel, String.valueOf(logEvent.getMessage()));
         logRecord.setThrown(logEvent.throwableArg());
         logRecord.setParameters(logEvent.getArgs());
 
