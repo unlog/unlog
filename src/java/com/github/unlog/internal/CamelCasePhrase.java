@@ -21,10 +21,48 @@ import java.util.LinkedList;
 
 public class CamelCasePhrase {
 
+    public static final ParseState SeekingAcronymOrWord = new AbstractParseState() {
+
+        @Override
+        protected ParseState parseOther(char c, ElementBuilder builder) {
+            builder.addCharToElement(c);
+            return ParsingWord;
+        }
+
+        @Override
+        protected ParseState parseUpperCase(char c, ElementBuilder builder) {
+            builder.addCharToElement(c);
+            return ParsingAcronym;
+        }
+    };
+    public static final ParseState SeekingStartOfWord = new ParseState() {
+        public ParseState parseNextCharacter(char c, ElementBuilder builder) {
+            builder.addCharToElement(c);
+            return SeekingAcronymOrWord;
+        }
+    };
+    public static final ParseState ParsingAcronym = new AbstractParseState() {
+
+        @Override
+        protected ParseState parseLowerCase(char c, ElementBuilder builder) {
+            char lastCharParsed = builder.removeLastChar();
+            builder.endOfElement();
+            return SeekingStartOfWord.parseNextCharacter(lastCharParsed,
+                    builder).parseNextCharacter(c, builder);
+        }
+    };
+    public static final ParseState ParsingWord = new AbstractParseState() {
+
+        @Override
+        protected ParseState parseUpperCase(char c, ElementBuilder builder) {
+            builder.endOfElement();
+            return SeekingStartOfWord.parseNextCharacter(c, builder);
+        }
+    };
     private final LinkedList<String> words = new LinkedList<String>();
 
     public CamelCasePhrase(String phrase) {
-        ParseState state = ParseState.SeekingStartOfWord;
+        ParseState state = SeekingStartOfWord;
         ElementBuilder elementBuilder = new ElementBuilder();
         for (int i = 0; i < phrase.length(); i++) {
             state = state.parseNextCharacter(phrase.charAt(i), elementBuilder);
@@ -64,52 +102,36 @@ public class CamelCasePhrase {
         return wordToCapitalise.toString();
     }
 
-    private static abstract class ParseState {
-        public static final ParseState SeekingAcronymOrWord = new ParseState() {
-            public ParseState parseNextCharacter(char c, ElementBuilder builder) {
-                builder.addCharToElement(c);
-                if (Character.isUpperCase(c)) {
-                    return ParsingAcronym;
-                } else {
-                    return ParsingWord;
-                }
 
-            }
-        };
-        public static final ParseState SeekingStartOfWord = new ParseState() {
-            public ParseState parseNextCharacter(char c, ElementBuilder builder) {
-                builder.addCharToElement(c);
-                return SeekingAcronymOrWord;
-            }
-        };
-        public static final ParseState ParsingAcronym = new ParseState() {
-            @Override
-            public ParseState parseNextCharacter(char c, ElementBuilder builder) {
-                if (Character.isLowerCase(c)) {
-                    char lastCharParsed = builder.removeLastChar();
-                    builder.endOfElement();
-                    return SeekingStartOfWord.parseNextCharacter(lastCharParsed,
-                            builder).parseNextCharacter(c, builder);
-                } else {
-                    builder.addCharToElement(c);
-                    return ParsingAcronym;
-                }
-            }
-        };
-        public static final ParseState ParsingWord = new ParseState() {
-            @Override
-            public ParseState parseNextCharacter(char c, ElementBuilder builder) {
-                if (Character.isUpperCase(c)) {
-                    builder.endOfElement();
-                    return SeekingStartOfWord.parseNextCharacter(c, builder);
-                } else {
-                    builder.addCharToElement(c);
-                    return ParsingWord;
-                }
-            }
-        };
+    public static interface ParseState {
+        ParseState parseNextCharacter(char c, ElementBuilder builder);
+    }
 
-        public abstract ParseState parseNextCharacter(char c, ElementBuilder builder);
+    private static abstract class AbstractParseState implements ParseState {
+
+        @Override
+        public ParseState parseNextCharacter(char c, ElementBuilder builder) {
+            if (Character.isUpperCase(c)) {
+                return parseUpperCase(c, builder);
+            } else if (Character.isLowerCase(c)) {
+                return parseLowerCase(c, builder);
+            } else {
+                return parseOther(c, builder);
+            }
+        }
+
+        protected ParseState parseOther(char c, ElementBuilder builder){
+            builder.addCharToElement(c);
+            return this;
+        }
+
+        protected ParseState parseUpperCase(char c, ElementBuilder builder) {
+            return parseOther(c, builder);
+        }
+
+        protected ParseState parseLowerCase(char c, ElementBuilder builder) {
+            return parseOther(c, builder);
+        }
     }
 
     private class ElementBuilder {
@@ -135,4 +157,5 @@ public class CamelCasePhrase {
             return lastChar;
         }
     }
+
 }
