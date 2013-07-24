@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.unlog.internal;
+package com.github.unlog.internal.format;
 
 import com.github.unlog.LogFormat;
 

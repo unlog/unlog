@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.unlog.internal;
+package com.github.unlog.internal.format;
 
+import com.github.unlog.internal.format.LogFormatFactory;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationHandler;

@@ -16,7 +16,7 @@
 
 package com.github.unlog;
 
-import com.github.unlog.internal.LogFormatFactory;
+import com.github.unlog.internal.format.LogFormatFactory;
 import com.github.unlog.jul.JavaUtilLogWriter;
 import com.github.unlog.spi.Arguments;
 import com.github.unlog.spi.LogEvent;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.unlog.internal;
+package com.github.unlog.internal.format;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class CamelCasePhraseTest {
 

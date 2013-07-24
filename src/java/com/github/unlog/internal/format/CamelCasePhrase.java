@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.unlog.internal;
+package com.github.unlog.internal.format;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -103,38 +103,7 @@ public class CamelCasePhrase {
     }
 
 
-    public static interface ParseState {
-        ParseState parseNextCharacter(char c, ElementBuilder builder);
-    }
-
-    private static abstract class AbstractParseState implements ParseState {
-
-        @Override
-        public ParseState parseNextCharacter(char c, ElementBuilder builder) {
-            if (Character.isUpperCase(c)) {
-                return parseUpperCase(c, builder);
-            } else if (Character.isLowerCase(c)) {
-                return parseLowerCase(c, builder);
-            } else {
-                return parseOther(c, builder);
-            }
-        }
-
-        protected ParseState parseOther(char c, ElementBuilder builder){
-            builder.addCharToElement(c);
-            return this;
-        }
-
-        protected ParseState parseUpperCase(char c, ElementBuilder builder) {
-            return parseOther(c, builder);
-        }
-
-        protected ParseState parseLowerCase(char c, ElementBuilder builder) {
-            return parseOther(c, builder);
-        }
-    }
-
-    private class ElementBuilder {
+    class ElementBuilder {
 
         private StringBuilder currentElement = new StringBuilder();
 
