@@ -1,5 +1,5 @@
-UnLog
-=====
+[UnLog](https://github.com/unlog/unlog/wiki)
+============================================
 
 An (almost) invisible logging framework
 
