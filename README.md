@@ -1,7 +1,7 @@
 [UnLog](https://github.com/unlog/unlog/wiki)
 ============================================
 
-An (almost) invisible logging framework
+An (almost) invisible logging framework.
 
 UnLog is a logging framework that lets you do your logging without requiring every class to depend on a logging
 framework.  You define the interface to your log and UnLog implements that interface using dynamic proxies.  Behind
@@ -12,3 +12,5 @@ UnLog Core is completely free of any non-jdk dependencies.  It supports publishi
 
 Future support for other logging frameworks will be released in separate modules to maintain the independence of UnLog
  Core.
+
+Further information can be found on the [wiki](https://github.com/unlog/unlog/wiki).
