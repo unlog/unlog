@@ -43,7 +43,7 @@ public class UnLogTest {
     private TestLogger log;
 
     @Rule
-    public LoggerFixture constructionProjectLoggerFixture = LoggerFixture.createLoggerFixture(mockery, ConstructionProject.class.getCanonicalName());
+    public LoggerFixture constructionProjectLoggerFixture = LoggerFixture.createLoggerFixture(mockery, ConstructionProjectLog.class.getCanonicalName());
 
     @Before
     public void setUp() throws Exception {
@@ -106,14 +106,14 @@ public class UnLogTest {
         Object[] expectedContext = {atThisAddress, forThisCustomer};
         loggerFixture.expectLogStatement(FINEST, "startedBuildingAHouse", expectedContext);
 
-        ConstructionProject house = log.startedBuildingAHouse(atThisAddress, forThisCustomer);
+        ConstructionProjectLog houseLog = log.startedBuildingAHouse(atThisAddress, forThisCustomer);
 
-        assertThat(house, not(nullValue()));
+        assertThat(houseLog, not(nullValue()));
 
         constructionProjectLoggerFixture.setLevel(FINEST);
         constructionProjectLoggerFixture.expectLogStatement(FINEST, "roofComplete", expectedContext);
 
-        house.roofComplete();
+        houseLog.roofComplete();
     }
 
     public interface TestLogger {
@@ -128,7 +128,7 @@ public class UnLogTest {
 
         void ohNoTheresBeenAnException(String details, Exception e);
 
-        ConstructionProject startedBuildingAHouse(String address, Customer customer);
+        ConstructionProjectLog startedBuildingAHouse(String address, Customer customer);
     }
 
     public class Customer {
@@ -136,7 +136,7 @@ public class UnLogTest {
         }
     }
 
-    public interface ConstructionProject {
+    public interface ConstructionProjectLog {
         void roofComplete();
     }
 }
