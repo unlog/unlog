@@ -33,7 +33,7 @@ public class JavaUtilLogWriter implements LogWriter, EventLogger {
         Logger logger = Logger.getLogger(logEvent.getLogCategory().toString());
         Level julLevel = logEvent.getLogLevel().mapLevel(levelMap);
 
-        LogRecord logRecord = new LogRecord(julLevel, String.valueOf(logEvent.getMessage()));
+        LogRecord logRecord = new LogRecord(julLevel, logEvent.getFormattedMessage());
         logRecord.setThrown(logEvent.throwableArg());
         logRecord.setParameters(logEvent.getArgs());
 

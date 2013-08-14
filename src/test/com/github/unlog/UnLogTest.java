@@ -31,9 +31,6 @@ import static org.junit.Assert.*;
 
 public class UnLogTest {
 
-    public static final String MESSAGE_WITH_DETAIL = "Something happened and heres the";
-    public static final String MESSAGE_WITH_EXCEPTION = "Oh no theres been an exception";
-    public static final String ERROR_MESSAGE = "Some sort of error occurred";
     @Rule
     public JUnitRuleMockery mockery = new JUnitRuleMockery();
 
@@ -63,7 +60,7 @@ public class UnLogTest {
     public void shouldOnlyLogAtLevelSpecifiedInAnnotation() {
 
         loggerFixture.setLevel(SEVERE);
-        loggerFixture.expectLogStatement(SEVERE, ERROR_MESSAGE);
+        loggerFixture.expectLogStatement(SEVERE, "Some sort of error occurred");
 
         log.someSortOfErrorOccurred();
         log.somethingHappened();
@@ -72,16 +69,16 @@ public class UnLogTest {
     @Test
     public void shouldLogArguments() {
         loggerFixture.setLevel(FINEST);
-        loggerFixture.expectLogStatement(FINEST, MESSAGE_WITH_DETAIL, new Object[]{"detail"});
+        loggerFixture.expectLogStatement(FINEST, "Something happened and heres the: detailed, info");
 
-        log.somethingHappenedAndHeresThe("detail");
+        log.somethingHappenedAndHeresThe("detailed", "info");
     }
 
     @Test
     public void shouldLogExceptionsUsingTheUnderlyingFrameworkFacility() {
         loggerFixture.setLevel(FINEST);
         Exception e = new Exception();
-        loggerFixture.expectLogStatement(FINEST, MESSAGE_WITH_EXCEPTION, e);
+        loggerFixture.expectLogStatement(FINEST, "Oh no theres been an exception", e);
 
         log.ohNoTheresBeenAnException(e);
     }
@@ -90,7 +87,7 @@ public class UnLogTest {
     public void shouldLogExceptionsAlongWithOtherArguments() {
         loggerFixture.setLevel(FINEST);
         Exception e = new Exception();
-        loggerFixture.expectLogStatement(FINEST, MESSAGE_WITH_EXCEPTION, new Object[]{"while processing some transaction"}, e);
+        loggerFixture.expectLogStatement(FINEST, "Oh no theres been an exception: while processing some transaction", e);
 
         log.ohNoTheresBeenAnException("while processing some transaction", e);
     }
@@ -104,14 +101,14 @@ public class UnLogTest {
         Customer forThisCustomer = new Customer("Bob");
         String atThisAddress = "at this address";
         Object[] expectedContext = {atThisAddress, forThisCustomer};
-        loggerFixture.expectLogStatement(FINEST, "startedBuildingAHouse", expectedContext);
+        loggerFixture.expectLogStatement(FINEST, "startedBuildingAHouse");
 
         ConstructionProjectLog houseLog = log.startedBuildingAHouse(atThisAddress, forThisCustomer);
 
         assertThat(houseLog, not(nullValue()));
 
         constructionProjectLoggerFixture.setLevel(FINEST);
-        constructionProjectLoggerFixture.expectLogStatement(FINEST, "roofComplete", expectedContext);
+        constructionProjectLoggerFixture.expectLogStatement(FINEST, "roofComplete");
 
         houseLog.roofComplete();
     }
@@ -122,7 +119,7 @@ public class UnLogTest {
         @Log(level = ERROR)
         void someSortOfErrorOccurred();
 
-        void somethingHappenedAndHeresThe(String detail);
+        void somethingHappenedAndHeresThe(String detail, String moreDetail);
 
         void ohNoTheresBeenAnException(Exception e);
 

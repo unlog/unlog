@@ -16,6 +16,9 @@
 
 package com.github.unlog;
 
+import com.github.unlog.internal.format.Joiner;
+import com.github.unlog.spi.Arguments;
+
 public class LogFormat {
     private final String format;
 
@@ -27,4 +30,17 @@ public class LogFormat {
     public String toString() {
         return format;
     }
+
+    public String format(Arguments arguments) {
+        Joiner argJoiner = new Joiner(", ");
+        arguments.foreach(argJoiner);
+
+        Joiner messageJoiner = new Joiner(": ");
+        messageJoiner.element(format);
+        if (!arguments.isEmpty()){
+            messageJoiner.element(argJoiner);
+        }
+        return messageJoiner.toString();
+    }
+
 }
