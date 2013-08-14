@@ -29,19 +29,21 @@ import java.lang.reflect.Proxy;
 public class UnLog {
 
     private static final LogWriter LOG_WRITER = new JavaUtilLogWriter();
+    private static final LogFormatFactory logFormatFactory = new LogFormatFactory();
 
     public static <L> L createLogger(Class<L> loggerInterface) {
         return createLogger(loggerInterface, null);
     }
 
-    private static <L> L createLogger(Class<L> loggerInterface, Arguments context) {
+    private static <L> L createLogger(Class<L> loggerInterface, MessageContext context) {
         //noinspection unchecked
-        return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface}, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                return handleLogInvocation(method, args);
-            }
-        });
+        return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface},
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return handleLogInvocation(method, args);
+                    }
+                });
     }
 
     private static LogCategory categoryName(Method method) {
@@ -64,12 +66,17 @@ public class UnLog {
 
     private static Object handleLogInvocation(Method method, Object[] args) {
         Arguments arguments = new Arguments(args);
-        LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), new LogFormatFactory().logFormat(method), arguments));
-
         if (!Void.TYPE.equals(method.getReturnType())) {
-            return createLogger(method.getReturnType(), arguments);
+            return createLogger(method.getReturnType(), new MessageContext(logFormatFactory.logFormat(method), arguments));
+        } else {
+            LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), logFormatFactory.logFormat(method), arguments));
         }
 
         return null;
+    }
+
+    private static class MessageContext {
+        public MessageContext(LogFormat logFormat, Arguments arguments) {
+        }
     }
 }
