@@ -53,4 +53,7 @@ public class LogEvent {
         return arguments.throwableArg();
     }
 
+    public String getFormattedMessage() {
+        return message.format(arguments);
+    }
 }
