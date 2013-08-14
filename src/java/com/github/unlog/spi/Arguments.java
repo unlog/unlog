@@ -63,4 +63,18 @@ public class Arguments {
     public Object[] argsAsArray() {
         return args().toArray();
     }
+
+    public void foreach(Iterator iterator) {
+        for (Object arg : args) {
+            iterator.element(arg);
+        }
+    }
+
+    public boolean isEmpty() {
+        return args().isEmpty();
+    }
+
+    public interface Iterator {
+        Iterator element(Object el);
+    }
 }
