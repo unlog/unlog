@@ -19,7 +19,6 @@ package com.github.unlog;
 import com.github.unlog.internal.format.LogFormatFactory;
 import com.github.unlog.jul.JavaUtilLogWriter;
 import com.github.unlog.spi.Arguments;
-import com.github.unlog.spi.LogEvent;
 import com.github.unlog.spi.LogWriter;
 
 import java.lang.reflect.InvocationHandler;
@@ -32,25 +31,20 @@ public class UnLog {
     private static final LogFormatFactory logFormatFactory = new LogFormatFactory();
 
     public static <L> L createLogger(Class<L> loggerInterface) {
-        return createLogger(loggerInterface, null);
+        return createLogger(loggerInterface, MessageContext.DEFAULT);
     }
 
-    private static <L> L createLogger(Class<L> loggerInterface, MessageContext context) {
+    static <L> L createLogger(Class<L> loggerInterface, MessageContext context) {
         //noinspection unchecked
         return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface},
-                new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return handleLogInvocation(method, args);
-                    }
-                });
+                new LogInvocationHandler(LOG_WRITER, logFormatFactory, context));
     }
 
-    private static LogCategory categoryName(Method method) {
+    static LogCategory categoryName(Method method) {
         return new LogCategory(method.getDeclaringClass().getCanonicalName());
     }
 
-    private static LogLevel determineLogLevel(Method method) {
+    static LogLevel determineLogLevel(Method method) {
         LogLevel logLevel;
         if (method.isAnnotationPresent(Log.class)) {
             logLevel = method.getAnnotation(Log.class).level();
@@ -64,19 +58,28 @@ public class UnLog {
         return LogLevel.DEBUG;
     }
 
-    private static Object handleLogInvocation(Method method, Object[] args) {
-        Arguments arguments = new Arguments(args);
-        if (!Void.TYPE.equals(method.getReturnType())) {
-            return createLogger(method.getReturnType(), new MessageContext(logFormatFactory.logFormat(method), arguments));
-        } else {
-            LOG_WRITER.writeLogEvent(new LogEvent(categoryName(method), determineLogLevel(method), logFormatFactory.logFormat(method), arguments));
+    static class LogInvocationHandler implements InvocationHandler {
+        private final LogWriter logWriter;
+        private final LogFormatFactory logFormatFactory;
+        private MessageContext context;
+
+        public LogInvocationHandler(LogWriter logWriter, LogFormatFactory logFormatFactory, MessageContext context) {
+            this.logWriter = logWriter;
+            this.logFormatFactory = logFormatFactory;
+            this.context = context;
         }
 
-        return null;
-    }
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            Arguments arguments = new Arguments(args);
+            if (!Void.TYPE.equals(method.getReturnType())) {
+                return createLogger(method.getReturnType(), new MessageContext(logFormatFactory.logFormat(method), arguments));
+            } else {
+                logWriter.writeLogEvent(context.createLogEvent(arguments, logFormatFactory.logFormat(method), categoryName(method), determineLogLevel(method)));
+            }
 
-    private static class MessageContext {
-        public MessageContext(LogFormat logFormat, Arguments arguments) {
+            return null;
         }
+
     }
 }

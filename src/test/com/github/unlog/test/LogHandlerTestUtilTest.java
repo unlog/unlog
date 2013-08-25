@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 public class LogHandlerTestUtilTest {
 
+    @SuppressWarnings("WeakerAccess") // Must be public for JUnit Rule API to work
     @Rule
     public JUnitRuleMockery mockery = new JUnitRuleMockery();
 

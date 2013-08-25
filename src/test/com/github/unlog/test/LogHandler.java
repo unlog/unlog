@@ -19,7 +19,7 @@ package com.github.unlog.test;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-public class LogHandler extends Handler {
+class LogHandler extends Handler {
     private LoggerFixture.LogReceiver logReceiver;
 
     public LogHandler(LoggerFixture.LogReceiver logReceiver) {

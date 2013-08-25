@@ -19,9 +19,9 @@ package com.github.unlog.internal.format;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class CamelCasePhrase {
+class CamelCasePhrase {
 
-    public static final ParseState SeekingAcronymOrWord = new AbstractParseState() {
+    private static final ParseState SeekingAcronymOrWord = new AbstractParseState() {
 
         @Override
         protected ParseState parseOther(char c, ElementBuilder builder) {
@@ -35,13 +35,13 @@ public class CamelCasePhrase {
             return ParsingAcronym;
         }
     };
-    public static final ParseState SeekingStartOfWord = new ParseState() {
+    private static final ParseState SeekingStartOfWord = new ParseState() {
         public ParseState parseNextCharacter(char c, ElementBuilder builder) {
             builder.addCharToElement(c);
             return SeekingAcronymOrWord;
         }
     };
-    public static final ParseState ParsingAcronym = new AbstractParseState() {
+    private static final ParseState ParsingAcronym = new AbstractParseState() {
 
         @Override
         protected ParseState parseLowerCase(char c, ElementBuilder builder) {
@@ -51,7 +51,7 @@ public class CamelCasePhrase {
                     builder).parseNextCharacter(c, builder);
         }
     };
-    public static final ParseState ParsingWord = new AbstractParseState() {
+    private static final ParseState ParsingWord = new AbstractParseState() {
 
         @Override
         protected ParseState parseUpperCase(char c, ElementBuilder builder) {

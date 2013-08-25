@@ -92,16 +92,15 @@ public class UnLogTest {
         log.ohNoTheresBeenAnException("while processing some transaction", e);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void shouldLogTransactionContextAlongWithTransactionEvents() {
 
         loggerFixture.setLevel(FINEST);
+        loggerFixture.expectLogStatement(FINEST, "Building a house");
 
         Customer forThisCustomer = new Customer("Bob");
         String atThisAddress = "at this address";
-        Object[] expectedContext = {atThisAddress, forThisCustomer};
-        loggerFixture.expectLogStatement(FINEST, "Building a house");
-
         ConstructionProjectLog houseLog = log.buildingAHouse(atThisAddress, forThisCustomer);
         //  > build a house at this address, for this customer
 
