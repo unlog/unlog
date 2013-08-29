@@ -19,7 +19,12 @@ package com.github.unlog;
 import com.github.unlog.spi.Arguments;
 
 public class LogMessage {
-    public static final LogMessage DEFAULT = new LogMessage();
+    public static final LogMessage EMPTY = new LogMessage() {
+        @Override
+        LogMessage extendWith(LogFormat format, Arguments arguments) {
+            return new LogMessage(format, arguments);
+        }
+    };
     private final LogFormat format;
     private final Arguments arguments;
 
@@ -40,7 +45,12 @@ public class LogMessage {
         return arguments;
     }
 
-    LogMessage createMessage(Arguments arguments, LogFormat format) {
-        return new LogMessage(format, arguments);
+    LogMessage extendWith(LogFormat format, Arguments arguments) {
+
+        String prefix = getFormattedMessage();
+        String suffix = format.toString();
+
+        return new LogMessage(new LogFormat(prefix + " - " + suffix), arguments);
     }
+
 }

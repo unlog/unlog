@@ -28,7 +28,7 @@ public class ArgumentsTest {
     @Test
     public void shouldHandleNoArgs() {
         Arguments arguments = givenArguments().withNoArgs().build();
-        assertThat(arguments.args(), is(not(nullValue())));
+        assertThat(arguments.arguments(), is(not(nullValue())));
         assertThat(arguments.size(), is(0));
         assertThat(arguments.throwableArg(), is(nullValue()));
     }

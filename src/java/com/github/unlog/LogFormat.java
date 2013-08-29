@@ -32,15 +32,24 @@ public class LogFormat {
     }
 
     public String format(Arguments arguments) {
-        Joiner argJoiner = new Joiner(", ");
-        arguments.foreach(argJoiner);
+        Joiner joinArgs = new Joiner(", "){
+            @Override
+            public Arguments.Iterator element(Object el) {
+                return super.element("%s");
+            }
+        };
+        arguments.foreach(joinArgs);
+        String joinedArgs = String.format(joinArgs.toString(), arguments.argsAsArray());
 
-        Joiner messageJoiner = new Joiner(": ");
-        messageJoiner.element(format);
+        Joiner joinMessage = new Joiner(": ");
+        joinMessage.element(format);
         if (!arguments.isEmpty()){
-            messageJoiner.element(argJoiner);
+            joinMessage.element(joinedArgs);
         }
-        return messageJoiner.toString();
+        return joinMessage.toString();
     }
 
+    public LogFormat append(LogFormat format) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -20,7 +20,6 @@ package com.github.unlog;
 import com.github.unlog.test.LoggerFixture;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -92,7 +91,7 @@ public class UnLogTest {
         log.ohNoTheresBeenAnException("while processing some transaction", e);
     }
 
-    @Test @Ignore
+    @Test
     public void shouldLogTransactionContextAlongWithTransactionEvents() {
 
         Customer forThisCustomer = new Customer("Bob");
@@ -102,8 +101,8 @@ public class UnLogTest {
         assertThat(constructionLog, not(nullValue()));
 
         constructionProjectLoggerFixture.setLevel(FINEST);
-        constructionProjectLoggerFixture.expectLogStatement(FINEST, "Construction job for, Bob, " +
-                "at this address: Roof complete");
+        constructionProjectLoggerFixture.expectLogStatement(FINEST, "Construction job for: Bob, " +
+                "at this address - Roof complete");
 
         constructionLog.roofComplete();
     }
@@ -124,7 +123,15 @@ public class UnLogTest {
     }
 
     public class Customer {
+        private final String name;
+
         public Customer(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 

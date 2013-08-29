@@ -33,7 +33,11 @@ public class Arguments {
         this.args.remove(throwable);
     }
 
-    public List<Object> args() {
+    public static Arguments args(Object... args) {
+        return new Arguments(args);
+    }
+
+    public List<Object> arguments() {
         return args;
     }
 
@@ -58,11 +62,11 @@ public class Arguments {
     }
 
     int size() {
-        return args().size();
+        return arguments().size();
     }
 
     public Object[] argsAsArray() {
-        return args().toArray();
+        return arguments().toArray();
     }
 
     public void foreach(Iterator iterator) {
@@ -72,7 +76,7 @@ public class Arguments {
     }
 
     public boolean isEmpty() {
-        return args().isEmpty();
+        return arguments().isEmpty();
     }
 
     public interface Iterator {

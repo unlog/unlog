@@ -32,7 +32,7 @@ public class UnLog {
     private static final LogFormatFactory logFormatFactory = new LogFormatFactory();
 
     public static <L> L createLogger(Class<L> loggerInterface) {
-        return createLogger(loggerInterface, LogMessage.DEFAULT);
+        return createLogger(loggerInterface, LogMessage.EMPTY);
     }
 
     private static <L> L createLogger(Class<L> loggerInterface, LogMessage context) {
@@ -74,9 +74,9 @@ public class UnLog {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Arguments arguments = new Arguments(args);
             if (!Void.TYPE.equals(method.getReturnType())) {
-                return createLogger(method.getReturnType(), context.createMessage(arguments, logFormatFactory.logFormat(method)));
+                return createLogger(method.getReturnType(), context.extendWith(logFormatFactory.logFormat(method), arguments));
             } else {
-                logWriter.writeLogEvent(LogEvent.createLogEvent(categoryName(method), determineLogLevel(method), context.createMessage(arguments, logFormatFactory.logFormat(method))));
+                logWriter.writeLogEvent(LogEvent.createLogEvent(categoryName(method), determineLogLevel(method), context.extendWith(logFormatFactory.logFormat(method), arguments)));
             }
 
             return null;
