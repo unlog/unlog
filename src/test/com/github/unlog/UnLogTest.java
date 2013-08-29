@@ -92,24 +92,20 @@ public class UnLogTest {
         log.ohNoTheresBeenAnException("while processing some transaction", e);
     }
 
-    @Test
-    @Ignore
+    @Test @Ignore
     public void shouldLogTransactionContextAlongWithTransactionEvents() {
-
-        loggerFixture.setLevel(FINEST);
-        loggerFixture.expectLogStatement(FINEST, "Building a house");
 
         Customer forThisCustomer = new Customer("Bob");
         String atThisAddress = "at this address";
-        ConstructionProjectLog houseLog = log.buildingAHouse(atThisAddress, forThisCustomer);
-        //  > build a house at this address, for this customer
+        ConstructionProjectLog constructionLog = log.constructionJobFor(forThisCustomer, atThisAddress);
 
-        assertThat(houseLog, not(nullValue()));
+        assertThat(constructionLog, not(nullValue()));
 
         constructionProjectLoggerFixture.setLevel(FINEST);
-        constructionProjectLoggerFixture.expectLogStatement(FINEST, "Building a house. Roof complete");
+        constructionProjectLoggerFixture.expectLogStatement(FINEST, "Construction job for, Bob, " +
+                "at this address: Roof complete");
 
-        houseLog.roofComplete();
+        constructionLog.roofComplete();
     }
 
     public interface TestLogger {
@@ -124,7 +120,7 @@ public class UnLogTest {
 
         void ohNoTheresBeenAnException(String details, Exception e);
 
-        ConstructionProjectLog buildingAHouse(String address, Customer customer);
+        ConstructionProjectLog constructionJobFor(Customer customer, String address);
     }
 
     public class Customer {

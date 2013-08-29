@@ -17,20 +17,22 @@
 package com.github.unlog.spi;
 
 import com.github.unlog.LogCategory;
-import com.github.unlog.LogFormat;
 import com.github.unlog.LogLevel;
+import com.github.unlog.LogMessage;
 
 public class LogEvent {
     private final LogCategory logCategoryName;
     private final LogLevel logLevel;
-    private final LogFormat message;
-    private final Arguments arguments;
+    public final LogMessage message;
 
-    public LogEvent(LogCategory logCategoryName, LogLevel logLevel, LogFormat messageFormat, Arguments arguments) {
+    public LogEvent(LogCategory logCategoryName, LogLevel logLevel, LogMessage message) {
         this.logCategoryName = logCategoryName;
         this.logLevel = logLevel;
-        this.message = messageFormat;
-        this.arguments = arguments;
+        this.message = message;
+    }
+
+    public static LogEvent createLogEvent(LogCategory logCategoryName, LogLevel logLevel, LogMessage message) {
+        return new LogEvent(logCategoryName, logLevel, message);
     }
 
     public LogCategory getLogCategory() {
@@ -41,19 +43,19 @@ public class LogEvent {
         return logLevel;
     }
 
-    public LogFormat getMessage() {
-        return message;
+    public Object[] getArgs() {
+        return args().argsAsArray();
     }
 
-    public Object[] getArgs() {
-        return arguments.argsAsArray();
+    private Arguments args() {
+        return message.arguments();
     }
 
     public Throwable throwableArg() {
-        return arguments.throwableArg();
+        return args().throwableArg();
     }
 
     public String getFormattedMessage() {
-        return message.format(arguments);
+        return message.getFormattedMessage();
     }
 }

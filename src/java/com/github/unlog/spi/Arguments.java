@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Arguments {
+    public static final Arguments NO_ARGS = new Arguments(new Object[0]);
     private final LinkedList<Object> args = new LinkedList<Object>();
     private Throwable throwable;
 

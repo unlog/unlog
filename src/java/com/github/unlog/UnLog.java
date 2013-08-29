@@ -19,6 +19,7 @@ package com.github.unlog;
 import com.github.unlog.internal.format.LogFormatFactory;
 import com.github.unlog.jul.JavaUtilLogWriter;
 import com.github.unlog.spi.Arguments;
+import com.github.unlog.spi.LogEvent;
 import com.github.unlog.spi.LogWriter;
 
 import java.lang.reflect.InvocationHandler;
@@ -31,20 +32,20 @@ public class UnLog {
     private static final LogFormatFactory logFormatFactory = new LogFormatFactory();
 
     public static <L> L createLogger(Class<L> loggerInterface) {
-        return createLogger(loggerInterface, MessageContext.DEFAULT);
+        return createLogger(loggerInterface, LogMessage.DEFAULT);
     }
 
-    static <L> L createLogger(Class<L> loggerInterface, MessageContext context) {
+    private static <L> L createLogger(Class<L> loggerInterface, LogMessage context) {
         //noinspection unchecked
         return (L) Proxy.newProxyInstance(UnLog.class.getClassLoader(), new Class[]{loggerInterface},
                 new LogInvocationHandler(LOG_WRITER, logFormatFactory, context));
     }
 
-    static LogCategory categoryName(Method method) {
+    private static LogCategory categoryName(Method method) {
         return new LogCategory(method.getDeclaringClass().getCanonicalName());
     }
 
-    static LogLevel determineLogLevel(Method method) {
+    private static LogLevel determineLogLevel(Method method) {
         LogLevel logLevel;
         if (method.isAnnotationPresent(Log.class)) {
             logLevel = method.getAnnotation(Log.class).level();
@@ -61,9 +62,9 @@ public class UnLog {
     static class LogInvocationHandler implements InvocationHandler {
         private final LogWriter logWriter;
         private final LogFormatFactory logFormatFactory;
-        private MessageContext context;
+        private LogMessage context;
 
-        public LogInvocationHandler(LogWriter logWriter, LogFormatFactory logFormatFactory, MessageContext context) {
+        public LogInvocationHandler(LogWriter logWriter, LogFormatFactory logFormatFactory, LogMessage context) {
             this.logWriter = logWriter;
             this.logFormatFactory = logFormatFactory;
             this.context = context;
@@ -73,9 +74,9 @@ public class UnLog {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Arguments arguments = new Arguments(args);
             if (!Void.TYPE.equals(method.getReturnType())) {
-                return createLogger(method.getReturnType(), new MessageContext(logFormatFactory.logFormat(method), arguments));
+                return createLogger(method.getReturnType(), context.createMessage(arguments, logFormatFactory.logFormat(method)));
             } else {
-                logWriter.writeLogEvent(context.createLogEvent(arguments, logFormatFactory.logFormat(method), categoryName(method), determineLogLevel(method)));
+                logWriter.writeLogEvent(LogEvent.createLogEvent(categoryName(method), determineLogLevel(method), context.createMessage(arguments, logFormatFactory.logFormat(method))));
             }
 
             return null;

@@ -17,18 +17,30 @@
 package com.github.unlog;
 
 import com.github.unlog.spi.Arguments;
-import com.github.unlog.spi.LogEvent;
 
-class MessageContext {
-    public static final MessageContext DEFAULT = new MessageContext();
+public class LogMessage {
+    public static final LogMessage DEFAULT = new LogMessage();
+    private final LogFormat format;
+    private final Arguments arguments;
 
-    public MessageContext(LogFormat logFormat, Arguments arguments) {
+    public LogMessage(LogFormat format, Arguments arguments) {
+        this.format = format;
+        this.arguments = arguments;
     }
 
-    private MessageContext() {
+    private LogMessage() {
+        this(new LogFormat(""), Arguments.NO_ARGS);
     }
 
-    public LogEvent createLogEvent(Arguments arguments, LogFormat logFormat, LogCategory logCategoryName, LogLevel logLevel) {
-        return new LogEvent(logCategoryName, logLevel, logFormat, arguments);
+    public String getFormattedMessage() {
+        return format.format(arguments);
+    }
+
+    public Arguments arguments() {
+        return arguments;
+    }
+
+    LogMessage createMessage(Arguments arguments, LogFormat format) {
+        return new LogMessage(format, arguments);
     }
 }

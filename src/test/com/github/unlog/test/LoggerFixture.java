@@ -32,11 +32,11 @@ public class LoggerFixture implements TestRule {
     private LogReceiver logReceiver;
     private JUnitRuleMockery mockery;
 
-    public LoggerFixture(Logger logger, JUnitRuleMockery mockery, String loggerName) {
+    private LoggerFixture(Logger logger, JUnitRuleMockery mockery, String loggerName) {
         this.logger = logger;
         initialLogLevel = logger.getLevel();
         this.mockery = mockery;
-        this.logReceiver = mockery.mock(LogReceiver.class, loggerName);
+        this.logReceiver = mockery.mock(LogReceiver.class, loggerName + "-Receiver");
         handler = new LogHandler(this.logReceiver);
 
         logger.setUseParentHandlers(false);
