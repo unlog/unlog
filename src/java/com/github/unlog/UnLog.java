@@ -59,7 +59,7 @@ public class UnLog {
         return LogLevel.DEBUG;
     }
 
-    static class LogInvocationHandler implements InvocationHandler {
+    private static class LogInvocationHandler implements InvocationHandler {
         private final LogWriter logWriter;
         private final LogFormatFactory logFormatFactory;
         private LogMessage context;

@@ -23,7 +23,7 @@ import com.github.unlog.LogMessage;
 public class LogEvent {
     private final LogCategory logCategoryName;
     private final LogLevel logLevel;
-    public final LogMessage message;
+    private final LogMessage message;
 
     public LogEvent(LogCategory logCategoryName, LogLevel logLevel, LogMessage message) {
         this.logCategoryName = logCategoryName;
